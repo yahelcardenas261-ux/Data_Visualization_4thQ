@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity 9: Data Cleaning - Part 1</title>
+    <style>
+        :root {
+            --purple: #6B46C1;
+            --dark-purple: #553C9A;
+            --light-purple: #9F7AEA;
+            --gold: #D69E2E;
+            --light-gold: #F6E05E;
+            --black: #1A202C;
+            --white: #FFFFFF;
+            --gray-light: #F7FAFC;
+            --gray-medium: #E2E8F0;
+            --gray-dark: #4A5568;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--black);
+            background-color: var(--white);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--purple) 0%, var(--dark-purple) 100%);
+            color: var(--white);
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header h2 {
+            font-size: 1.3em;
+            font-weight: 400;
+            margin-bottom: 20px;
+            color: var(--light-gold);
+        }
+
+        .header .student-info {
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+
+        .header .student-name {
+            display: inline-block;
+            border-bottom: 2px solid var(--white);
+            min-width: 300px;
+            padding: 5px;
+            margin: 0 10px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background-color: var(--gray-light);
+            border-left: 4px solid var(--purple);
+            border-radius: 4px;
+        }
+
+        h2 {
+            color: var(--purple);
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        h3 {
+            color: var(--dark-purple);
+            font-size: 1.5em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: var(--purple);
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .code-container {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--gold);
+            color: var(--black);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .copy-button:hover {
+            background-color: var(--light-gold);
+        }
+
+        .copy-button.copied {
+            background-color: var(--purple);
+            color: var(--white);
+        }
+
+        pre {
+            background-color: var(--black);
+            color: var(--white);
+            padding: 20px;
+            padding-top: 50px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-top: 10px;
+        }
+
+        code {
+            background-color: var(--gray-medium);
+            color: var(--purple);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        pre code {
+            background-color: transparent;
+            color: var(--white);
+            padding: 0;
+        }
+
+        .highlight {
+            background-color: var(--light-gold);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            border-left: 4px solid var(--gold);
+        }
+
+        .info-box {
+            background-color: var(--light-purple);
+            color: var(--white);
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 {
+            color: var(--white);
+            margin-top: 0;
+        }
+
+        .warning-box {
+            background-color: #FED7D7;
+            color: #742A2A;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+            border-left: 4px solid #FC8181;
+        }
+
+        .warning-box h4 {
+            color: #742A2A;
+            margin-top: 0;
+        }
+
+        .acid-box {
+            background-color: #E6FFFA;
+            border: 2px solid #319795;
+            border-radius: 4px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .acid-box h4 {
+            color: #234E52;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .acid-box p {
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: var(--white);
+        }
+
+        th {
+            background-color: var(--purple);
+            color: var(--white);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-medium);
+        }
+
+        tr:hover {
+            background-color: var(--gray-light);
+        }
+
+        .timeline {
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+
+        .timeline-item {
+            margin-bottom: 20px;
+            padding-left: 20px;
+            border-left: 3px solid var(--gold);
+        }
+
+        .timeline-item h4 {
+            color: var(--purple);
+            margin: 0 0 5px 0;
+        }
+
+        .exercise-box {
+            background-color: var(--white);
+            border: 2px solid var(--purple);
+            border-radius: 4px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .exercise-box h4 {
+            margin-top: 0;
+            color: var(--purple);
+        }
+
+        .note {
+            background-color: var(--light-gold);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+
+        strong {
+            color: var(--dark-purple);
+            font-weight: 600;
+        }
+
+        @media print {
+            body {
+                max-width: 100%;
+            }
+            .copy-button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Activity 9: Data Cleaning</h1>
+        <h2>Data Engineering and Artificial Intelligence Course</h2>
+        <div class="student-info">
+            February 2026
+        </div>
+    </div>
+
+    <!-- SECTION 1: ACTIVITY OVERVIEW -->
+    <div class="section">
+        <h2>Section 1: Activity Overview</h2>
+        
+        <div class="info-box">
+            <h4>Activity Details</h4>
+            <p><strong>Value:</strong> 10% of final grade</p>
+            <p><strong>Time Required:</strong> 120 minutes</p>
+            <p><strong>Teams:</strong> Individual or pairs</p>
+            <p><strong>Due Date:</strong> February 17, 2026</p>
+        </div>
+
+        <h3>Workshop Timeline</h3>
+        <div class="timeline">
+            <div class="timeline-item">
+                <h4>Phase 1: Data Quality Assessment (40 minutes)</h4>
+                <p>Profile datasets and identify quality issues</p>
+            </div>
+            <div class="timeline-item">
+                <h4>Phase 2: Missing Data Handling (30 minutes)</h4>
+                <p>Apply imputation strategies to fill missing values</p>
+            </div>
+            <div class="timeline-item">
+                <h4>Phase 3: Data Standardization (30 minutes)</h4>
+                <p>Normalize formats and remove duplicates</p>
+            </div>
+            <div class="timeline-item">
+                <h4>Phase 4: Outlier Detection (20 minutes)</h4>
+                <p>Identify and treat anomalous values</p>
+            </div>
+        </div>
+
+        <h3>Learning Objectives</h3>
+        <ul>
+            <li>Identify and assess data quality issues in real-world datasets</li>
+            <li>Apply appropriate techniques to handle missing data</li>
+            <li>Standardize and normalize data for consistency</li>
+            <li>Detect and handle outliers using statistical methods</li>
+            <li>Visualize data quality improvements with before/after comparisons</li>
+            <li>Document data cleaning decisions and their impact</li>
+        </ul>
+
+        <h3>Technical Requirements</h3>
+        <ul>
+            <li>Python 3.8+ with pandas, numpy, matplotlib, seaborn</li>
+            <li>MySQL 8.0 and PostgreSQL 14 (Docker containers from Activity 7)</li>
+            <li>Jupyter Notebook or Python scripts</li>
+            <li>Academic Report Generator Tool</li>
+        </ul>
+
+        <div class="warning-box">
+            <h4>Important Note</h4>
+            <p>This activity builds on Activities 7 and 8. Ensure your Docker containers are running and databases are accessible before starting.</p>
+        </div>
+    </div>
+
+    <!-- SECTION 2: INTRODUCTION TO DATA CLEANING -->
+    <div class="section">
+        <h2>Section 2: Introduction to Data Cleaning</h2>
+
+        <p>Data cleaning is a critical step in the data engineering pipeline. Real-world data is often incomplete, inconsistent, inaccurate, or contains errors that can significantly impact analysis results and machine learning model performance.</p>
+
+        <h3>Common Data Quality Issues</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Issue Type</th>
+                    <th>Description</th>
+                    <th>Impact</th>
+                    <th>Example</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Missing Values</strong></td>
+                    <td>Data points that are absent or null</td>
+                    <td>Incomplete analysis, biased results</td>
+                    <td>NULL prices, empty email fields</td>
+                </tr>
+                <tr>
+                    <td><strong>Duplicates</strong></td>
+                    <td>Identical or near-identical records</td>
+                    <td>Inflated counts, skewed statistics</td>
+                    <td>Same customer entered twice</td>
+                </tr>
+                <tr>
+                    <td><strong>Inconsistent Formats</strong></td>
+                    <td>Same data in different formats</td>
+                    <td>Failed joins, grouping errors</td>
+                    <td>Dates: "2025-01-15", "15/01/2025"</td>
+                </tr>
+                <tr>
+                    <td><strong>Outliers</strong></td>
+                    <td>Values far from the typical range</td>
+                    <td>Distorted averages, model overfitting</td>
+                    <td>Age: 999, Price: $0.01</td>
+                </tr>
+                <tr>
+                    <td><strong>Invalid Data</strong></td>
+                    <td>Data that violates business rules</td>
+                    <td>Logic errors, failed validations</td>
+                    <td>Negative inventory, future birth dates</td>
+                </tr>
+                <tr>
+                    <td><strong>Inconsistent Naming</strong></td>
+                    <td>Different spellings or cases</td>
+                    <td>Failed matches, duplicate entities</td>
+                    <td>"USA", "U.S.A.", "United States"</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Data Cleaning Methodology</h3>
+
+        <div class="acid-box">
+            <h4>The 4-Phase Data Cleaning Process</h4>
+            <p><strong>1. Discovery:</strong> Profile the data to identify quality issues</p>
+            <p><strong>2. Analysis:</strong> Understand the root cause and impact of issues</p>
+            <p><strong>3. Transformation:</strong> Apply appropriate cleaning techniques</p>
+            <p><strong>4. Validation:</strong> Verify improvements and document changes</p>
+        </div>
+
+        <h3>Key Techniques</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Technique</th>
+                    <th style="width: 40%;">When to Use</th>
+                    <th style="width: 35%;">Methods</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Imputation</strong></td>
+                    <td>Filling missing values when removal would lose critical data</td>
+                    <td>Mean/median, forward fill, interpolation, predictive models</td>
+                </tr>
+                <tr>
+                    <td><strong>Standardization</strong></td>
+                    <td>Converting data to consistent formats</td>
+                    <td>Text normalization, date parsing, unit conversion</td>
+                </tr>
+                <tr>
+                    <td><strong>Deduplication</strong></td>
+                    <td>Removing exact or fuzzy duplicate records</td>
+                    <td>Hash comparison, Levenshtein distance, record linkage</td>
+                </tr>
+                <tr>
+                    <td><strong>Validation</strong></td>
+                    <td>Ensuring data meets business rules</td>
+                    <td>Range checks, pattern matching, referential integrity</td>
+                </tr>
+                <tr>
+                    <td><strong>Outlier Treatment</strong></td>
+                    <td>Handling extreme values</td>
+                    <td>IQR method, Z-score, domain expertise, capping</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="note">
+            <strong>Important Principle:</strong> Always preserve the original raw data. Perform cleaning operations on copies and document all transformations for reproducibility and audit trails.
+        </div>
+
+        <h3>Visualization Importance</h3>
+
+        <p>Before/after visualizations are essential for:</p>
+        <ul>
+            <li><strong>Validation:</strong> Confirming cleaning operations worked as intended</li>
+            <li><strong>Communication:</strong> Showing stakeholders the quality improvements</li>
+            <li><strong>Documentation:</strong> Creating an audit trail of data transformations</li>
+            <li><strong>Decision-making:</strong> Justifying cleaning approaches taken</li>
+        </ul>
+
+        <div class="info-box">
+            <h4>In This Activity</h4>
+            <p>You'll work with intentionally "dirty" datasets that simulate real-world data quality issues. Each exercise requires before/after visualizations to demonstrate the impact of your cleaning operations.</p>
+        </div>
+    </div>
+
+    <!-- SECTION 3: ENVIRONMENT SETUP -->
+    <div class="section">
+        <h2>Section 3: Environment Setup</h2>
+
+        <p>We'll use the same Docker infrastructure from Activity 7, but populate databases with realistic "dirty" data containing various quality issues.</p>
+
+        <h3>Step 1: Verify Docker Containers</h3>
+
+        <div class="code-container">
+            <button class="copy-button" onclick="copyCode(this)">Copy Code</button>
+            <pre><code># Check if containers from Activity 7 are running
+docker ps
+
+# If not running, start them
+docker-compose up -d
+
+# Verify connectivity
+docker exec -it mysql-container mysql -u root -prootpassword -e "SELECT VERSION();"
+docker exec -it postgres-container psql -U postgres -c "SELECT version();"</code></pre>
+        </div>
+
+        <h3>Step 2: Install Python Libraries</h3>
+
+        <div class="code-container">
+            <button class="copy-button" onclick="copyCode(this)">Copy Code</button>
+            <pre><code># Install required libraries
+pip install pandas numpy matplotlib seaborn mysql-connector-python psycopg2-binary scikit-learn
+
+# Verify installation
+python -c "import pandas; import numpy; import matplotlib; import seaborn; print('All libraries installed successfully')"</code></pre>
+        </div>
+
+        <h3>Step 3: Create Databases with Dirty Data</h3>
+
+        <div class="warning-box">
+            <h4>Note</h4>
+            <p>The following SQL scripts intentionally create data with quality issues to simulate real-world scenarios.</p>
+        </div>
+
+        <h4>MySQL - Sales Database with Quality Issues</h4>
+
+        <div class="code-container">
+            <button class="copy-button" onclick="copyCode(this)">Copy Code</button>
+            <pre><code>-- init_mysql_dirty.sql
+CREATE DATABASE IF NOT EXISTS sales_data_raw;
+USE sales_data_raw;
+
+-- Drop existing tables
+DROP TABLE IF EXISTS customer_orders;
+DROP TABLE IF EXISTS customers;
+DROP TABLE IF EXISTS products;
+
+-- Customers table with quality issues
+CREATE TABLE customers (
+    customer_id INT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    phone VARCHAR(50),
+    age INT,
+    country VARCHAR(50),
+    registration_date VARCHAR(50),
+    account_balance DECIMAL(10,2)
+);
+
+-- Insert dirty customer data
+INSERT INTO customers VALUES
+(1, 'John Smith', 'john.smith@email.com', '+1-555-0101', 34, 'USA', '2024-01-15', 1250.50),
+(2, 'john smith', 'JOHN.SMITH@EMAIL.COM', '555-0101', 34, 'usa', '15/01/2024', 1250.50), -- Duplicate with different format
+(3, 'María García', NULL, '+52-555-0102', 28, 'Mexico', '2024-02-20', -50.00), -- Missing email, negative balance
+(4, 'Li Wei', 'li.wei@email.com', NULL, 999, 'China', '2024-03-10', 3500.00), -- Missing phone, invalid age
+(5, 'Anna Müller', 'anna.mueller@email.com', '+49-555-0103', 45, 'Germany', '2024-04-05', 2100.75),
+(6, 'Anna Mueller', 'anna.mueller@email.com', '+49-555-0103', 45, 'germany', '05/04/2024', 2100.75), -- Duplicate
+(7, 'Raj Patel', 'raj.patel@', '555-0104', NULL, 'India', NULL, 890.25), -- Invalid email, missing age and date
+(8, 'Sophie Martin', 'sophie.martin@email.com', '+33-555-0105', 31, 'France', '2024-06-15', NULL), -- Missing balance
+(9, 'Mohamed Ali', 'mohamed.ali@email.com', '+20-555-0106', -5, 'Egypt', '2024-07-20', 1500.00), -- Negative age
+(10, NULL, 'unknown@email.com', NULL, 25, 'UK', '2024-08-01', 750.00); -- Missing name
+
+-- Products table with quality issues
+CREATE TABLE products (
+    product_id INT PRIMARY KEY,
+    product_name VARCHAR(100),
+    category VARCHAR(50),
+    price DECIMAL(10,2),
+    stock INT,
+    supplier VARCHAR(100),
+    last_updated VARCHAR(50)
+);
+
+-- Insert dirty product data
+INSERT INTO products VALUES
+(101, 'Laptop Pro 15"', 'Electronics', 1299.99, 45, 'TechCorp Inc.', '2024-01-10'),
+(102, 'laptop pro 15"', 'electronics', 1299.99, 45, 'TechCorp Inc', '10/01/2024'), -- Duplicate with different case
+(103, 'Wireless Mouse', 'Accessories', 29.99, -5, 'GadgetCo', NULL), -- Negative stock, missing date
+(104, 'USB-C Cable', NULL, 0.00, 200, 'CableTech', '2024-02-15'), -- Missing category, zero price
+(105, 'Gaming Keyboard', 'Accessories', 149.99, 30, NULL, '2024-03-20'), -- Missing supplier
+(106, 'Monitor 27"', 'Electronics', 99999.99, 15, 'DisplayPro', '2024-04-10'), -- Outlier price
+(107, 'HDMI Cable', 'Accessories', 19.99, NULL, 'CableTech', '15/04/2024'), -- Missing stock
+(108, 'Webcam HD', 'Electronics', 89.99, 0, '', '2024-05-01'), -- Empty supplier, zero stock
+(109, 'Desk Lamp', 'Office', -10.50, 60, 'LightCo', NULL), -- Negative price
+(110, NULL, 'Electronics', 599.99, 25, 'UnknownSupplier', '2024-06-15'); -- Missing product name
+
+-- Orders table with quality issues
+CREATE TABLE customer_orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    product_id INT,
+    quantity INT,
+    order_date VARCHAR(50),
+    status VARCHAR(30),
+    total_amount DECIMAL(10,2)
+);
+
+-- Insert dirty order data
+INSERT INTO customer_orders VALUES
+(1001, 1, 101, 2, '2024-05-10', 'Completed', 2599.98),
+(1002, 1, 101, 2, '2024-05-10', 'completed', 2599.98), -- Duplicate order
+(1003, 3, 103, 5, NULL, 'Pending', 149.95), -- Missing date
+(1004, 999, 104, 1, '2024-06-15', 'Completed', 0.00), -- Invalid customer_id, zero amount
+(1005, 5, 105, -3, '15/07/2024', 'SHIPPED', 449.97), -- Negative quantity
+(1006, 7, 106, 1, '2024-08-01', NULL, 99999.99), -- Missing status
+(1007, NULL, 107, 2, '2024-08-15', 'Cancelled', 39.98), -- Missing customer_id
+(1008, 8, 999, 1, '2024-09-01', 'Completed', 89.99), -- Invalid product_id
+(1009, 9, 108, 0, NULL, 'pending', 0.00), -- Zero quantity
+(1010, 10, 109, 5, '2024-10-01', 'Completed', -52.50); -- Negative amount
+
+SELECT 'MySQL dirty database created successfully' AS status;</code></pre>
+        </div>
+
+        <div class="code-container">
+            <button class="copy-button" onclick="copyCode(this)">Copy Code</button>
+            <pre><code># Execute MySQL initialization
+docker exec -i mysql-container mysql -u root -prootpassword < init_mysql_dirty.sql</code></pre>
+        </div>
+
+        <h4>PostgreSQL - Employee Database with Quality Issues</h4>
+
+        <div class="code-container">
+            <button class="copy-button" onclick="copyCode(this)">Copy Code</button>
+            <pre><code>-- init_postgres_dirty.sql
+DROP DATABASE IF EXISTS employee_data_raw;
+CREATE DATABASE employee_data_raw;
+\c employee_data_raw
+
+-- Employees table with quality issues
+CREATE TABLE employees (
+    employee_id INT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    email VARCHAR(100),
+    department VARCHAR(50),
+    salary DECIMAL(10,2),
+    hire_date VARCHAR(50),
+    performance_score DECIMAL(3,2)
+);
+
+-- Insert dirty employee data
+INSERT INTO employees VALUES
+(1, 'Alice', 'Johnson', 'alice.johnson@company.com', 'Engineering', 85000.00, '2022-01-15', 4.5),
+(2, 'alice', 'johnson', 'ALICE.JOHNSON@COMPANY.COM', 'engineering', 85000.00, '15/01/2022', 4.5), -- Duplicate
+(3, 'Bob', NULL, 'bob.smith@company.com', 'Sales', NULL, '2022-03-20', 3.8), -- Missing last name and salary
+(4, 'Carol', 'Davis', NULL, 'Marketing', 72000.00, NULL, NULL), -- Missing email, hire date, score
+(5, 'David', 'Wilson', 'david.wilson@', 'IT', -50000.00, '2023-01-10', 4.2), -- Invalid email, negative salary
+(6, NULL, 'Brown', 'emma.brown@company.com', 'HR', 68000.00, '2023-02-15', 9.5), -- Missing first name, invalid score
+(7, 'Frank', 'Miller', 'frank.miller@company.com', 'engineering', 92000.00, '15/03/2023', 4.1),
+(8, 'Grace', 'Taylor', 'grace.taylor@company.com', 'SALES', 999999.99, '2023-04-20', 0.0), -- Outlier salary, zero score
+(9, 'Henry', 'Anderson', 'henry.anderson@company.com', '', 78000.00, '2023-05-25', -1.5), -- Empty department, negative score
+(10, 'Ivy', 'Thomas', 'ivy.thomas@company.com', 'Marketing', 71000.00, '2025-12-31', 3.9), -- Future hire date
+(11, 'Jack', 'Martinez', 'jack.martinez@company.com', 'Sales', 0.00, NULL, 4.0), -- Zero salary
+(12, 'Karen', 'Garcia', 'karen.garcia@company.com', 'IT', 88000.00, '2023-08-15', NULL); -- Missing score
+
+-- Departments table with quality issues
+CREATE TABLE departments (
+    department_id INT PRIMARY KEY,
+    department_name VARCHAR(50),
+    manager_name VARCHAR(100),
+    budget DECIMAL(12,2),
+    location VARCHAR(100)
+);
+
+INSERT INTO departments VALUES
+(1, 'Engineering', 'John Smith', 500000.00, 'New York'),
+(2, 'engineering', 'John Smith', 500000.00, 'new york'), -- Duplicate
+(3, 'Sales', NULL, -100000.00, 'Los Angeles'), -- Missing manager, negative budget
+(4, 'Marketing', 'Jane Doe', NULL, NULL), -- Missing budget and location
+(5, 'IT', 'Mike Johnson', 350000.00, ''),
+(6, 'HR', '', 200000.00, 'Chicago'), -- Empty manager
+(7, NULL, 'Sarah Williams', 400000.00, 'Boston'); -- Missing department name
+
+SELECT 'PostgreSQL dirty database created successfully' AS status;</code></pre>
+        </div>
+
+        <div class="code-container">
+            <button class="copy-button" onclick="copyCode(this)">Copy Code</button>
+            <pre><code># Execute PostgreSQL initialization
+docker exec -i postgres-container psql -U postgres < init_postgres_dirty.sql</code></pre>
+        </div>
+
+        <h3>Step 4: Verify Data Quality Issues</h3>
+
+        <div class="code-container">
+            <button class="copy-button" onclick="copyCode(this)">Copy Code</button>
+            <pre><code>import pandas as pd
+import mysql.connector
+import psycopg2
+
+# Connect to MySQL
+mysql_conn = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="rootpassword",
+    database="sales_data_raw"
+)
+
+# Connect to PostgreSQL
+pg_conn = psycopg2.connect(
+    host="localhost",
+    user="postgres",
+    password="postgrespassword",
+    database="employee_data_raw"
+)
+
+# Quick quality check
+customers_df = pd.read_sql("SELECT * FROM customers", mysql_conn)
+employees_df = pd.read_sql("SELECT * FROM employees", pg_conn)
+
+print("MySQL Customers - Missing Values:")
+print(customers_df.isnull().sum())
+
+print("\nPostgreSQL Employees - Missing Values:")
+print(employees_df.isnull().sum())
+
+mysql_conn.close()
+pg_conn.close()</code></pre>
+        </div>
+
+        <div class="highlight">
+            <strong>Expected Output:</strong> You should see multiple missing values, duplicates, and format inconsistencies in both databases. This is intentional and represents the reality of working with real-world data.
+        </div>
+    </div>
+
+    <!-- SECTION 4: EXERCISE 1 - DATA QUALITY ASSESSMENT -->
+    <div class="section">
+        <h2>Section 4: Exercise 1 - Data Quality Assessment</h2>
+        
+        <div class="exercise-box">
+            <h4>Exercise Details</h4>
+            <p><strong>Time:</strong> 40 minutes</p>
+            <p><strong>Points:</strong> 4% of Activity Grade</p>
+            <p><strong>Objective:</strong> Profile the data, identify quality issues, and create comprehensive quality reports with visualizations.</p>
+        </div>
+
+        <h3>Part 1: Comprehensive Data Profiling</h3>
+
+        <p>Create a complete data quality assessment that identifies all types of issues present in the datasets.</p>
+
+        <div class="code-container">
+            <button class="copy-button" onclick="copyCode(this)">Copy Code</button>
+            <pre><code># data_quality_assessment.py
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import mysql.connector
+import psycopg2
+from collections import Counter
+
+# Set visualization style
+sns.set_style("whitegrid")
+plt.rcParams['figure.figsize'] = (15, 10)
+
+def connect_to_databases():
+    """Establish connections to both databases"""
+    mysql_conn = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="rootpassword",
+        database="sales_data_raw"
+    )
+    
+    pg_conn = psycopg2.connect(
+        host="localhost",
+        user="postgres",
+        password="postgrespassword",
+        database="employee_data_raw"
+    )
+    
+    return mysql_conn, pg_conn
+
+def profile_dataframe(df, table_name):
+    """Generate comprehensive data quality profile"""
+    profile = {
+        'table_name': table_name,
+        'total_rows': len(df),
+        'total_columns': len(df.columns),
+        'missing_values': df.isnull().sum().to_dict(),
+        'missing_percentage': (df.isnull().sum() / len(df) * 100).to_dict(),
+        'duplicate_rows': df.duplicated().sum(),
+        'memory_usage': df.memory_usage(deep=True).sum() / 1024**2  # MB
+    }
+    
+    # Check for negative values in numeric columns
+    numeric_cols = df.select_dtypes(include=[np.number]).columns
+    profile['negative_values'] = {}
+    for col in numeric_cols:
+        neg_count = (df[col] < 0).sum()
+        if neg_count > 0:
+            profile['negative_values'][col] = neg_count
+    
+    # Check for zero values in amount/price columns
+    profile['zero_values'] = {}
+    for col in numeric_cols:
+        zero_count = (df[col] == 0).sum()
+        if zero_count > 0:
+            profile['zero_values'][col] = zero_count
+    
+    # Check for empty strings
+    string_cols = df.select_dtypes(include=[object]).columns
+    profile['empty_strings'] = {}
+    for col in string_cols:
+        empty_count = (df[col] == '').sum()
+        if empty_count > 0:
+            profile['empty_strings'][col] = empty_count
+    
+    return profile
+
+def detect_duplicates_details(df, table_name):
+    """Detailed duplicate analysis"""
+    if df.duplicated().sum() > 0:
+        duplicates = df[df.duplicated(keep=False)].sort_values(by=df.columns[0])
+        print(f"\n=== Duplicates in {table_name} ===")
+        print(duplicates)
+        return duplicates
+    return None
+
+def visualize_quality_issues(profiles):
+    """Create comprehensive quality issue visualizations"""
+    fig, axes = plt.subplots(2, 2, figsize=(16, 12))
+    fig.suptitle('Data Quality Assessment - Overview', fontsize=16, fontweight='bold')
+    
+    # Plot 1: Missing Values Heatmap
+    ax1 = axes[0, 0]
+    missing_data = []
+    labels = []
+    for profile in profiles:
+        table = profile['table_name']
+        for col, pct in profile['missing_percentage'].items():
+            if pct > 0:
+                missing_data.append(pct)
+                labels.append(f"{table}.{col}")
+    
+    if missing_data:
+        y_pos = np.arange(len(labels))
+        bars = ax1.barh(y_pos, missing_data, color='#E53E3E', alpha=0.7)
+        ax1.set_yticks(y_pos)
+        ax1.set_yticklabels(labels, fontsize=9)
+        ax1.set_xlabel('Missing Data (%)', fontweight='bold')
+        ax1.set_title('Missing Values by Column', fontweight='bold')
+        ax1.grid(axis='x', alpha=0.3)
+        
+        # Add percentage labels
+        for bar, val in zip(bars, missing_data):
+            ax1.text(bar.get_width() + 0.5, bar.get_y() + bar.get_height()/2, 
+                    f'{val:.1f}%', va='center', fontsize=8)
+    
+    # Plot 2: Quality Issue Summary
+    ax2 = axes[0, 1]
+    issue_types = ['Missing', 'Duplicates', 'Negative', 'Zero', 'Empty Strings']
+    issue_counts = [
+        sum(len(p['missing_values']) for p in profiles),
+        sum(p['duplicate_rows'] for p in profiles),
+        sum(len(p.get('negative_values', {})) for p in profiles),
+        sum(len(p.get('zero_values', {})) for p in profiles),
+        sum(len(p.get('empty_strings', {})) for p in profiles)
+    ]
+    
+    colors = ['#E53E3E', '#DD6B20', '#D69E2E', '#38B2AC', '#805AD5']
+    bars = ax2.bar(issue_types, issue_counts, color=colors, alpha=0.7)
+    ax2.set_ylabel('Number of Affected Columns', fontweight='bold')
+    ax2.set_title('Data Quality Issues by Type', fontweight='bold')
+    ax2.grid(axis='y', alpha=0.3)
+    
+    # Add count labels
+    for bar, count in zip(bars, issue_counts):
+        height = bar.get_height()
+        ax2.text(bar.get_x() + bar.get_width()/2., height,
+                f'{int(count)}', ha='center', va='bottom', fontweight='bold')
+    
+    # Plot 3: Row Count by Table
+    ax3 = axes[1, 0]
+    table_names = [p['table_name'] for p in profiles]
+    row_counts = [p['total_rows'] for p in profiles]
+    bars = ax3.bar(table_names, row_counts, color='#6B46C1', alpha=0.7)
+    ax3.set_ylabel('Number of Rows', fontweight='bold')
+    ax3.set_title('Dataset Sizes', fontweight='bold')
+    ax3.tick_params(axis='x', rotation=45)
+    ax3.grid(axis='y', alpha=0.3)
+    
+    for bar, count in zip(bars, row_counts):
+        height = bar.get_height()
+        ax3.text(bar.get_x() + bar.get_width()/2., height,
+                f'{int(count)}', ha='center', va='bottom', fontweight='bold')
+    
+    # Plot 4: Data Completeness Score
+    ax4 = axes[1, 1]
+    completeness_scores = []
+    for profile in profiles:
+        total_cells = profile['total_rows'] * profile['total_columns']
+        missing_cells = sum(profile['missing_values'].values())
+        completeness = ((total_cells - missing_cells) / total_cells * 100) if total_cells > 0 else 0
+        completeness_scores.append(completeness)
+    
+    bars = ax4.barh(table_names, completeness_scores, color='#48BB78', alpha=0.7)
+    ax4.set_xlabel('Completeness (%)', fontweight='bold')
+    ax4.set_title('Data Completeness by Table', fontweight='bold')
+    ax4.set_xlim(0, 100)
+    ax4.grid(axis='x', alpha=0.3)
+    
+    for bar, score in zip(bars, completeness_scores):
+        ax4.text(bar.get_width() + 1, bar.get_y() + bar.get_height()/2,
+                f'{score:.1f}%', va='center', fontweight='bold')
+    
+    plt.tight_layout()
+    plt.savefig('data_quality_assessment.png', dpi=300, bbox_inches='tight')
+    print("\n✓ Quality assessment visualization saved as 'data_quality_assessment.png'")
+    plt.show()
+
+def print_quality_report(profile):
+    """Print detailed quality report"""
+    print(f"\n{'='*60}")
+    print(f"DATA QUALITY REPORT: {profile['table_name']}")
+    print(f"{'='*60}")
+    print(f"Total Rows: {profile['total_rows']}")
+    print(f"Total Columns: {profile['total_columns']}")
+    print(f"Duplicate Rows: {profile['duplicate_rows']}")
+    print(f"Memory Usage: {profile['memory_usage']:.2f} MB")
+    
+    print(f"\n--- Missing Values ---")
+    for col, count in profile['missing_values'].items():
+        if count > 0:
+            pct = profile['missing_percentage'][col]
+            print(f"  {col}: {count} ({pct:.1f}%)")
+    
+    if profile.get('negative_values'):
+        print(f"\n--- Negative Values (Invalid) ---")
+        for col, count in profile['negative_values'].items():
+            print(f"  {col}: {count} rows")
+    
+    if profile.get('zero_values'):
+        print(f"\n--- Zero Values (Suspicious) ---")
+        for col, count in profile['zero_values'].items():
+            print(f"  {col}: {count} rows")
+    
+    if profile.get('empty_strings'):
+        print(f"\n--- Empty Strings ---")
+        for col, count in profile['empty_strings'].items():
+            print(f"  {col}: {count} rows")
+
+# Main execution
+if __name__ == "__main__":
+    print("Starting Data Quality Assessment...")
+    
+    # Connect to databases
+    mysql_conn, pg_conn = connect_to_databases()
+    
+    # Load all tables
+    customers_df = pd.read_sql("SELECT * FROM customers", mysql_conn)
+    products_df = pd.read_sql("SELECT * FROM products", mysql_conn)
+    orders_df = pd.read_sql("SELECT * FROM customer_orders", mysql_conn)
+    employees_df = pd.read_sql("SELECT * FROM employees", pg_conn)
+    departments_df = pd.read_sql("SELECT * FROM departments", pg_conn)
+    
+    # Profile each table
+    profiles = [
+        profile_dataframe(customers_df, "customers"),
+        profile_dataframe(products_df, "products"),
+        profile_dataframe(orders_df, "customer_orders"),
+        profile_dataframe(employees_df, "employees"),
+        profile_dataframe(departments_df, "departments")
+    ]
+    
+    # Print detailed reports
+    for profile in profiles:
+        print_quality_report(profile)
+    
+    # Detect duplicates
+    print(f"\n\n{'='*60}")
+    print("DUPLICATE RECORDS ANALYSIS")
+    print(f"{'='*60}")
+    detect_duplicates_details(customers_df, "customers")
+    detect_duplicates_details(products_df, "products")
+    detect_duplicates_details(orders_df, "customer_orders")
+    detect_duplicates_details(employees_df, "employees")
+    detect_duplicates_details(departments_df, "departments")
+    
+    # Create visualizations
+    visualize_quality_issues(profiles)
+    
+    # Close connections
+    mysql_conn.close()
+    pg_conn.close()
+    
+    print("\n✓ Data Quality Assessment Complete!")</code></pre>
+        </div>
+
+        <div class="note">
+            <strong>Expected Output:</strong> The script will generate a comprehensive quality report showing:
+            <ul>
+                <li>Missing values count and percentage per column</li>
+                <li>Duplicate records identified across all tables</li>
+                <li>Negative values in numeric fields (prices, ages, balances)</li>
+                <li>Zero values in fields where they shouldn't appear</li>
+                <li>Empty strings in text fields</li>
+                <li>Visual dashboard with 4 quality metrics charts</li>
+            </ul>
+        </div>
+
+        <div class="highlight">
+            <strong>Deliverable for Exercise 1:</strong>
+            <ul>
+                <li>Screenshot of the complete quality report output</li>
+                <li>The generated visualization (data_quality_assessment.png)</li>
+                <li>Brief written summary (2-3 paragraphs) of the most critical quality issues discovered</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function copyCode(button) {
+            const codeBlock = button.nextElementSibling;
+            const code = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = 'Copy Code';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

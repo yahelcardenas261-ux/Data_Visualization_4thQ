@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheatsheet: Métodos de Visualización de Datos</title>
+    <style>
+        @media print {
+            body {
+                margin: 0;
+                padding: 20px;
+            }
+            .method {
+                page-break-inside: avoid;
+            }
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .method {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            align-items: center;
+        }
+        
+        .method-content h2 {
+            color: #667eea;
+            margin-top: 0;
+            font-size: 1.8em;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        
+        .method-content p {
+            color: #333;
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+        
+        .method-image {
+            text-align: center;
+        }
+        
+        .method-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        
+        .method-number {
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.1em;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 Cheatsheet de Visualización de Datos</h1>
+        <p>Guía de referencia rápida para métodos de visualización</p>
+    </div>
+
+    <div class="method">
+        <div class="method-content">
+            <h2><span class="method-number">1</span>Line Plot</h2>
+            <p>Es una gráfica ideal para representar cómo una variable continua cambia a lo largo del tiempo o un rango, revelando tendencias.</p>
+        </div>
+        <div class="method-image">
+            <img src="imagenes/lineplot.png" alt="Line Plot Example">
+        </div>
+    </div>
+
+    <div class="method">
+        <div class="method-content">
+            <h2><span class="method-number">2</span>Bar Chart</h2>
+            <p>Es una representación visual de datos que usa rectángulos (barras) verticales u horizontales para comparar cantidades entre diferentes categorías.</p>
+        </div>
+        <div class="method-image">
+            <img src="imagenes/BarChart.png" alt="Bar Chart Example">
+        </div>
+    </div>
+
+    <div class="method">
+        <div class="method-content">
+            <h2><span class="method-number">3</span>Scatter Plot</h2>
+            <p>Es una gráfica que muestra la relación entre dos variables numéricas, usando puntos en un plano cartesiano donde cada punto representa un par de valores ordenado, permitiendo visualizar si existe una correlación entre ellas, como una tendencia lineal, curva o la ausencia de ella.</p>
+        </div>
+        <div class="method-image">
+            <img src="imagenes/ScatterPlot.png" alt="Scatter Plot Example">
+        </div>
+    </div>
+
+    <div class="method">
+        <div class="method-content">
+            <h2><span class="method-number">4</span>Histogram</h2>
+            <p>Es una representación gráfica que muestra la distribución de frecuencia de datos numéricos continuos mediante barras.</p>
+        </div>
+        <div class="method-image">
+            <img src="imagenes/Histogram.png" alt="Histogram Example">
+        </div>
+    </div>
+
+    <div class="method">
+        <div class="method-content">
+            <h2><span class="method-number">5</span>Boxplot</h2>
+            <p>Es una representación gráfica estandarizada que resume visualmente un conjunto de datos numéricos mostrando la mediana, los cuartiles y los valores atípicos en una sola figura.</p>
+        </div>
+        <div class="method-image">
+            <img src="imagenes/Boxplot.png" alt="Boxplot Example">
+        </div>
+    </div>
+
+    <div class="method">
+        <div class="method-content">
+            <h2><span class="method-number">6</span>Pie Chart</h2>
+            <p>Es una representación visual que muestra datos como un círculo dividido en sectores donde cada sector representa una proporción o porcentaje del total, facilitando la comprensión de la relación entre las partes y el todo.</p>
+        </div>
+        <div class="method-image">
+            <img src="imagenes/PieChat.png" alt="Pie Chart Example">
+        </div>
+    </div>
+
+    <div class="method">
+        <div class="method-content">
+            <h2><span class="method-number">7</span>Density Plot (KDE - Kernel Density Estimation)</h2>
+            <p>Es una forma suavizada de visualizar la distribución de datos continuos, similar a un histograma pero con una curva continua que estima la función de densidad de probabilidad.</p>
+        </div>
+        <div class="method-image">
+            <img src="imagenes/DensityPlot.png" alt="Density Plot Example">
+        </div>
+    </div>
+
+    <div class="method">
+        <div class="method-content">
+            <h2><span class="method-number">8</span>Cumulative Density Function (CDF)</h2>
+            <p>Es una gráfica que muestra la probabilidad de que una variable aleatoria "X" tome un valor menor o igual a un valor específico x.</p>
+        </div>
+        <div class="method-image">
+            <img src="imagenes/CumulativeDensityFunction.png" alt="CDF Example">
+        </div>
+    </div>
+
+    <div class="method">
+        <div class="method-content">
+            <h2><span class="method-number">9</span>Error Bars</h2>
+            <p>Son un método de visualización utilizado para representar la variabilidad, incertidumbre o precisión de los datos en un gráfico de barras, líneas o dispersión.</p>
+        </div>
+        <div class="method-image">
+            <img src="imagenes/ErrorBars.png" alt="Error Bars Example">
+        </div>
+    </div>
+
+    <div class="method">
+        <div class="method-content">
+            <h2><span class="method-number">10</span>Mosaic Plot</h2>
+            <p>Es un gráfico donde el área de cada rectángulo es proporcional a la frecuencia de esa combinación de categorías, permitiendo ver las relaciones entre dos o más variables cualitativas de forma intuitiva, usando el tamaño de las proporciones y colores para darle significancia estadística.</p>
+        </div>
+        <div class="method-image">
+            <img src="imagenes/MosaicPlot.png" alt="Mosaic Plot Example">
+        </div>
+    </div>
+
+    <div class="method">
+        <div class="method-content">
+            <h2><span class="method-number">11</span>Slope Graph</h2>
+            <p>Es una visualización de datos que muestra el cambio entre dos puntos o momentos para múltiples categorías conectando sus valores iniciales y finales con líneas que indican la dirección y magnitud del cambio.</p>
+        </div>
+        <div class="method-image">
+            <img src="imagenes/SlopeGraph.png" alt="Slope Graph Example">
+        </div>
+    </div>
+
+    <div class="method">
+        <div class="method-content">
+            <h2><span class="method-number">12</span>Tree Map</h2>
+            <p>Es una técnica de visualización de datos que presenta jerarquías usando rectángulos anidados, donde el tamaño y color de cada rectángulo muestra datos cuantitativos permitiendo comparar proporciones y ver la estructura de datos complejos de forma compacta y eficiente.</p>
+        </div>
+        <div class="method-image">
+            <img src="imagenes/TreeMap.png" alt="Tree Map Example">
+        </div>
+    </div>
+
+    <div class="method">
+        <div class="method-content">
+            <h2><span class="method-number">13</span>Parallel Sets (Alluvial/Sankey Diagram)</h2>
+            <p>Es una visualización para datos categóricos multidimensionales que muestra flujos y cambios de proporciones entre variables, usando rectángulos verticales (los ejes) para categorías y cintas para conectar las frecuencias de las combinaciones revelando patrones y tendencias como la distribución de un conjunto de datos a través de diferentes fases o características, similar a un río que se divide y se une.</p>
+        </div>
+        <div class="method-image">
+            <img src="imagenes/ParallelSets.png" alt="Parallel Sets Example">
+        </div>
+    </div>
+
+    <div class="method">
+        <div class="method-content">
+            <h2><span class="method-number">14</span>Choropleth Map</h2>
+            <p>Es un mapa temático que utiliza colores, tonos o sombreados para representar variaciones estadísticas o datos numéricos en áreas geográficas predefinidas mostrando patrones y distribuciones espaciales de manera visual.</p>
+        </div>
+        <div class="method-image">
+            <img src="imagenes/ChoroplethMap.png" alt="Choropleth Map Example">
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>💡 Para imprimir o guardar como PDF: Ctrl+P (Windows) o Cmd+P (Mac) y selecciona "Guardar como PDF"</p>
+        <p>📊 Cheatsheet de Visualización de Datos - 2026</p>
+    </div>
+</body>
+</html>

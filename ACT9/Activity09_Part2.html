@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity 9: Data Cleaning - Part 2</title>
+    <style>
+        :root {
+            --purple: #6B46C1;
+            --dark-purple: #553C9A;
+            --light-purple: #9F7AEA;
+            --gold: #D69E2E;
+            --light-gold: #F6E05E;
+            --black: #1A202C;
+            --white: #FFFFFF;
+            --gray-light: #F7FAFC;
+            --gray-medium: #E2E8F0;
+            --gray-dark: #4A5568;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--black);
+            background-color: var(--white);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--purple) 0%, var(--dark-purple) 100%);
+            color: var(--white);
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header h2 {
+            font-size: 1.3em;
+            font-weight: 400;
+            margin-bottom: 20px;
+            color: var(--light-gold);
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background-color: var(--gray-light);
+            border-left: 4px solid var(--purple);
+            border-radius: 4px;
+        }
+
+        h2 {
+            color: var(--purple);
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        h3 {
+            color: var(--dark-purple);
+            font-size: 1.5em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: var(--purple);
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .code-container {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--gold);
+            color: var(--black);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .copy-button:hover {
+            background-color: var(--light-gold);
+        }
+
+        .copy-button.copied {
+            background-color: var(--purple);
+            color: var(--white);
+        }
+
+        pre {
+            background-color: var(--black);
+            color: var(--white);
+            padding: 20px;
+            padding-top: 50px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-top: 10px;
+        }
+
+        code {
+            background-color: var(--gray-medium);
+            color: var(--purple);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        pre code {
+            background-color: transparent;
+            color: var(--white);
+            padding: 0;
+        }
+
+        .highlight {
+            background-color: var(--light-gold);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            border-left: 4px solid var(--gold);
+        }
+
+        .info-box {
+            background-color: var(--light-purple);
+            color: var(--white);
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 {
+            color: var(--white);
+            margin-top: 0;
+        }
+
+        .warning-box {
+            background-color: #FED7D7;
+            color: #742A2A;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+            border-left: 4px solid #FC8181;
+        }
+
+        .warning-box h4 {
+            color: #742A2A;
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: var(--white);
+        }
+
+        th {
+            background-color: var(--purple);
+            color: var(--white);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-medium);
+        }
+
+        tr:hover {
+            background-color: var(--gray-light);
+        }
+
+        .exercise-box {
+            background-color: var(--white);
+            border: 2px solid var(--purple);
+            border-radius: 4px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .exercise-box h4 {
+            margin-top: 0;
+            color: var(--purple);
+        }
+
+        .note {
+            background-color: var(--light-gold);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+
+        strong {
+            color: var(--dark-purple);
+            font-weight: 600;
+        }
+
+        @media print {
+            body {
+                max-width: 100%;
+            }
+            .copy-button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Activity 9: Data Cleaning - Part 2</h1>
+        <h2>Advanced Cleaning Techniques & Evaluation</h2>
+    </div>
+
+    <!-- SECTION 5: EXERCISE 2 - MISSING DATA HANDLING -->
+    <div class="section">
+        <h2>Section 5: Exercise 2 - Missing Data Handling</h2>
+        
+        <div class="exercise-box">
+            <h4>Exercise Details</h4>
+            <p><strong>Time:</strong> 30 minutes</p>
+            <p><strong>Points:</strong> 3% of Activity Grade</p>
+            <p><strong>Objective:</strong> Apply appropriate strategies to handle missing values, with before/after visualizations showing impact.</p>
+        </div>
+
+        <h3>Understanding Missing Data Strategies</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Strategy</th>
+                    <th>Best For</th>
+                    <th>Caution</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Deletion</strong></td>
+                    <td>Small % of missing data, random pattern</td>
+                    <td>Can introduce bias, lose information</td>
+                </tr>
+                <tr>
+                    <td><strong>Mean/Median</strong></td>
+                    <td>Numeric data, normal distribution</td>
+                    <td>Reduces variance, not for categorical</td>
+                </tr>
+                <tr>
+                    <td><strong>Mode</strong></td>
+                    <td>Categorical data, clear majority class</td>
+                    <td>Can skew distribution</td>
+                </tr>
+                <tr>
+                    <td><strong>Forward/Backward Fill</strong></td>
+                    <td>Time series, sequential data</td>
+                    <td>Assumes continuity</td>
+                </tr>
+                <tr>
+                    <td><strong>Interpolation</strong></td>
+                    <td>Numeric time series with trends</td>
+                    <td>May not capture seasonality</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="code-container">
+            <button class="copy-button" onclick="copyCode(this)">Copy Code</button>
+            <pre><code># missing_data_handling.py
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import mysql.connector
+import psycopg2
+from datetime import datetime
+
+sns.set_style("whitegrid")
+
+def load_dirty_data():
+    """Load data from databases"""
+    mysql_conn = mysql.connector.connect(
+        host="localhost", user="root", 
+        password="rootpassword", database="sales_data_raw"
+    )
+    pg_conn = psycopg2.connect(
+        host="localhost", user="postgres", 
+        password="postgrespassword", database="employee_data_raw"
+    )
+    
+    customers = pd.read_sql("SELECT * FROM customers", mysql_conn)
+    products = pd.read_sql("SELECT * FROM products", mysql_conn)
+    employees = pd.read_sql("SELECT * FROM employees", pg_conn)
+    
+    mysql_conn.close()
+    pg_conn.close()
+    
+    return customers, products, employees
+
+def handle_missing_customers(df):
+    """Apply appropriate strategies for customer data"""
+    df_clean = df.copy()
+    
+    # Strategy 1: Fill missing emails with placeholder
+    df_clean['email'] = df_clean['email'].fillna('no-email@unknown.com')
+    
+    # Strategy 2: Fill missing phone with placeholder
+    df_clean['phone'] = df_clean['phone'].fillna('Unknown')
+    
+    # Strategy 3: Fill missing age with median (robust to outliers)
+    median_age = df_clean['age'][(df_clean['age'] > 0) & (df_clean['age'] < 120)].median()
+    df_clean['age'] = df_clean['age'].fillna(median_age)
+    
+    # Strategy 4: Fill missing balance with 0 (new accounts)
+    df_clean['account_balance'] = df_clean['account_balance'].fillna(0.0)
+    
+    # Strategy 5: Fill missing registration date with most recent date
+    df_clean['registration_date'] = df_clean['registration_date'].fillna('2024-01-01')
+    
+    # Strategy 6: Fill missing names with 'Unknown Customer'
+    df_clean['name'] = df_clean['name'].fillna('Unknown Customer')
+    
+    return df_clean
+
+def handle_missing_products(df):
+    """Apply appropriate strategies for product data"""
+    df_clean = df.copy()
+    
+    # Fill missing category with 'Uncategorized'
+    df_clean['category'] = df_clean['category'].fillna('Uncategorized')
+    
+    # Fill missing stock with 0
+    df_clean['stock'] = df_clean['stock'].fillna(0)
+    
+    # Fill missing supplier with 'Unknown Supplier'
+    df_clean['supplier'] = df_clean['supplier'].replace('', 'Unknown Supplier')
+    df_clean['supplier'] = df_clean['supplier'].fillna('Unknown Supplier')
+    
+    # Fill missing last_updated with current date
+    df_clean['last_updated'] = df_clean['last_updated'].fillna('2024-01-01')
+    
+    # Fill missing product_name with 'Unknown Product'
+    df_clean['product_name'] = df_clean['product_name'].fillna('Unknown Product')
+    
+    return df_clean
+
+def handle_missing_employees(df):
+    """Apply appropriate strategies for employee data"""
+    df_clean = df.copy()
+    
+    # Fill missing names with 'Unknown'
+    df_clean['first_name'] = df_clean['first_name'].fillna('Unknown')
+    df_clean['last_name'] = df_clean['last_name'].fillna('Unknown')
+    
+    # Fill missing email with generated placeholder
+    def generate_email(row):
+        if pd.isna(row['email']):
+            first = str(row['first_name']).lower()
+            last = str(row['last_name']).lower()
+            return f"{first}.{last}@company.com"
+        return row['email']
+    
+    df_clean['email'] = df_clean.apply(generate_email, axis=1)
+    
+    # Fill missing department with 'Unassigned'
+    df_clean['department'] = df_clean['department'].replace('', 'Unassigned')
+    df_clean['department'] = df_clean['department'].fillna('Unassigned')
+    
+    # Fill missing salary with median by department
+    for dept in df_clean['department'].unique():
+        dept_median = df_clean[df_clean['department'] == dept]['salary'].median()
+        df_clean.loc[(df_clean['department'] == dept) & (df_clean['salary'].isna()), 'salary'] = dept_median
+    
+    # Fill remaining missing salary with overall median
+    df_clean['salary'] = df_clean['salary'].fillna(df_clean['salary'].median())
+    
+    # Fill missing hire_date with median date
+    df_clean['hire_date'] = df_clean['hire_date'].fillna('2023-01-01')
+    
+    # Fill missing performance_score with department average
+    for dept in df_clean['department'].unique():
+        dept_avg = df_clean[df_clean['department'] == dept]['performance_score'].mean()
+        df_clean.loc[(df_clean['department'] == dept) & (df_clean['performance_score'].isna()), 'performance_score'] = dept_avg
+    
+    df_clean['performance_score'] = df_clean['performance_score'].fillna(df_clean['performance_score'].mean())
+    
+    return df_clean
+
+def visualize_missing_data_impact(df_before, df_after, title):
+    """Create before/after comparison of missing data handling"""
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    fig.suptitle(f'Missing Data Handling: {title}', fontsize=16, fontweight='bold')
+    
+    # Before: Missing data heatmap
+    ax1 = axes[0]
+    missing_before = df_before.isnull().sum()
+    missing_before = missing_before[missing_before > 0].sort_values(ascending=False)
+    
+    if len(missing_before) > 0:
+        bars = ax1.barh(range(len(missing_before)), missing_before.values, color='#E53E3E', alpha=0.7)
+        ax1.set_yticks(range(len(missing_before)))
+        ax1.set_yticklabels(missing_before.index)
+        ax1.set_xlabel('Missing Values Count', fontweight='bold')
+        ax1.set_title('BEFORE: Missing Data', fontweight='bold', color='#E53E3E')
+        ax1.grid(axis='x', alpha=0.3)
+        
+        for i, (bar, val) in enumerate(zip(bars, missing_before.values)):
+            ax1.text(bar.get_width() + 0.2, bar.get_y() + bar.get_height()/2, 
+                    f'{int(val)}', va='center', fontweight='bold')
+    else:
+        ax1.text(0.5, 0.5, 'No Missing Data', ha='center', va='center', 
+                transform=ax1.transAxes, fontsize=14)
+    
+    # After: Completeness visualization
+    ax2 = axes[1]
+    missing_after = df_after.isnull().sum()
+    total_fields = len(df_after.columns)
+    complete_fields = (missing_after == 0).sum()
+    
+    sizes = [complete_fields, total_fields - complete_fields]
+    colors = ['#48BB78', '#FC8181']
+    labels = [f'Complete ({complete_fields})', f'Still Missing ({total_fields - complete_fields})']
+    
+    wedges, texts, autotexts = ax2.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%',
+                                        startangle=90, textprops={'fontweight': 'bold'})
+    ax2.set_title('AFTER: Data Completeness', fontweight='bold', color='#48BB78')
+    
+    plt.tight_layout()
+    filename = f'missing_data_{title.lower().replace(" ", "_")}.png'
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    print(f"✓ Saved: {filename}")
+    plt.show()
+
+def print_missing_summary(df_before, df_after, name):
+    """Print summary of missing data handling"""
+    print(f"\n{'='*60}")
+    print(f"MISSING DATA SUMMARY: {name}")
+    print(f"{'='*60}")
+    
+    missing_before = df_before.isnull().sum().sum()
+    missing_after = df_after.isnull().sum().sum()
+    
+    print(f"Missing values BEFORE: {missing_before}")
+    print(f"Missing values AFTER:  {missing_after}")
+    print(f"Values filled:          {missing_before - missing_after}")
+    print(f"Completion rate:        {(1 - missing_after / (len(df_after) * len(df_after.columns))) * 100:.2f}%")
+
+# Main execution
+if __name__ == "__main__":
+    print("Starting Missing Data Handling...")
+    
+    # Load dirty data
+    customers, products, employees = load_dirty_data()
+    
+    # Handle missing data
+    customers_clean = handle_missing_customers(customers)
+    products_clean = handle_missing_products(products)
+    employees_clean = handle_missing_employees(employees)
+    
+    # Print summaries
+    print_missing_summary(customers, customers_clean, "Customers")
+    print_missing_summary(products, products_clean, "Products")
+    print_missing_summary(employees, employees_clean, "Employees")
+    
+    # Create visualizations
+    visualize_missing_data_impact(customers, customers_clean, "Customers")
+    visualize_missing_data_impact(products, products_clean, "Products")
+    visualize_missing_data_impact(employees, employees_clean, "Employees")
+    
+    print("\n✓ Missing Data Handling Complete!")
+    print("✓ All visualizations saved successfully")</code></pre>
+        </div>
+
+        <div class="highlight">
+            <strong>Deliverable for Exercise 2:</strong>
+            <ul>
+                <li>Three before/after visualization pairs showing missing data reduction</li>
+                <li>Summary statistics for each table showing completion rates</li>
+                <li>Written justification (1 paragraph per table) explaining why you chose each imputation strategy</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECTION 6: EXERCISE 3 - DATA STANDARDIZATION -->
+    <div class="section">
+        <h2>Section 6: Exercise 3 - Data Standardization & Deduplication</h2>
+        
+        <div class="exercise-box">
+            <h4>Exercise Details</h4>
+            <p><strong>Time:</strong> 30 minutes</p>
+            <p><strong>Points:</strong> 2% of Activity Grade</p>
+            <p><strong>Objective:</strong> Standardize formats, normalize text, and remove duplicate records with visual proof.</p>
+        </div>
+
+        <h3>Standardization Techniques</h3>
+
+        <div class="code-container">
+            <button class="copy-button" onclick="copyCode(this)">Copy Code</button>
+            <pre><code># data_standardization.py
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import re
+from datetime import datetime
+
+sns.set_style("whitegrid")
+
+def standardize_dates(date_str):
+    """Convert various date formats to standard YYYY-MM-DD"""
+    if pd.isna(date_str):
+        return date_str
+    
+    date_str = str(date_str).strip()
+    
+    # Try different date formats
+    formats = [
+        '%Y-%m-%d',      # 2024-01-15
+        '%d/%m/%Y',      # 15/01/2024
+        '%m/%d/%Y',      # 01/15/2024
+        '%Y/%m/%d',      # 2024/01/15
+    ]
+    
+    for fmt in formats:
+        try:
+            date_obj = datetime.strptime(date_str, fmt)
+            return date_obj.strftime('%Y-%m-%d')
+        except ValueError:
+            continue
+    
+    return date_str
+
+def standardize_text(text):
+    """Normalize text: lowercase, strip whitespace"""
+    if pd.isna(text):
+        return text
+    text = str(text).strip().lower()
+    text = re.sub(r'\s+', ' ', text)  # Replace multiple spaces
+    return text
+
+def standardize_phone(phone):
+    """Standardize phone numbers to +XX-XXX-XXXX format"""
+    if pd.isna(phone):
+        return phone
+    
+    # Remove all non-numeric characters except +
+    phone = str(phone)
+    digits = re.sub(r'[^\d+]', '', phone)
+    
+    # If it starts with +, keep it; otherwise add +1
+    if not digits.startswith('+'):
+        digits = '+1' + digits
+    
+    return digits
+
+def standardize_customers(df):
+    """Apply standardization to customer data"""
+    df_clean = df.copy()
+    
+    # Standardize dates
+    df_clean['registration_date'] = df_clean['registration_date'].apply(standardize_dates)
+    
+    # Standardize text fields
+    df_clean['name'] = df_clean['name'].apply(standardize_text)
+    df_clean['email'] = df_clean['email'].str.lower().str.strip()
+    df_clean['country'] = df_clean['country'].apply(standardize_text)
+    
+    # Standardize phone numbers
+    df_clean['phone'] = df_clean['phone'].apply(standardize_phone)
+    
+    # Fix invalid ages (negative or > 120)
+    df_clean.loc[(df_clean['age'] < 0) | (df_clean['age'] > 120), 'age'] = df_clean['age'].median()
+    
+    # Fix negative balances (set to 0)
+    df_clean.loc[df_clean['account_balance'] < 0, 'account_balance'] = 0.0
+    
+    return df_clean
+
+def standardize_products(df):
+    """Apply standardization to product data"""
+    df_clean = df.copy()
+    
+    # Standardize dates
+    df_clean['last_updated'] = df_clean['last_updated'].apply(standardize_dates)
+    
+    # Standardize text
+    df_clean['product_name'] = df_clean['product_name'].apply(standardize_text)
+    df_clean['category'] = df_clean['category'].apply(standardize_text)
+    df_clean['supplier'] = df_clean['supplier'].str.strip()
+    
+    # Fix negative prices
+    df_clean.loc[df_clean['price'] < 0, 'price'] = df_clean['price'].median()
+    
+    # Fix negative stock
+    df_clean.loc[df_clean['stock'] < 0, 'stock'] = 0
+    
+    return df_clean
+
+def standardize_employees(df):
+    """Apply standardization to employee data"""
+    df_clean = df.copy()
+    
+    # Standardize dates
+    df_clean['hire_date'] = df_clean['hire_date'].apply(standardize_dates)
+    
+    # Standardize text
+    df_clean['first_name'] = df_clean['first_name'].apply(standardize_text)
+    df_clean['last_name'] = df_clean['last_name'].apply(standardize_text)
+    df_clean['email'] = df_clean['email'].str.lower().str.strip()
+    df_clean['department'] = df_clean['department'].apply(standardize_text)
+    
+    # Fix negative salaries
+    df_clean.loc[df_clean['salary'] < 0, 'salary'] = df_clean['salary'].median()
+    
+    # Fix invalid performance scores (must be 0-5)
+    df_clean.loc[(df_clean['performance_score'] < 0) | (df_clean['performance_score'] > 5), 'performance_score'] = df_clean['performance_score'].median()
+    
+    return df_clean
+
+def remove_duplicates(df, subset=None):
+    """Remove duplicate records based on key columns"""
+    before_count = len(df)
+    df_clean = df.drop_duplicates(subset=subset, keep='first')
+    after_count = len(df_clean)
+    removed = before_count - after_count
+    
+    return df_clean, removed
+
+def visualize_standardization(df_before, df_after, title, field):
+    """Visualize standardization impact"""
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    fig.suptitle(f'Standardization Impact: {title}', fontsize=16, fontweight='bold')
+    
+    # Before: Unique value counts
+    ax1 = axes[0]
+    before_unique = df_before[field].nunique()
+    before_sample = df_before[field].value_counts().head(10)
+    
+    bars = ax1.barh(range(len(before_sample)), before_sample.values, color='#E53E3E', alpha=0.7)
+    ax1.set_yticks(range(len(before_sample)))
+    ax1.set_yticklabels([str(x)[:30] for x in before_sample.index], fontsize=8)
+    ax1.set_xlabel('Count', fontweight='bold')
+    ax1.set_title(f'BEFORE: {before_unique} unique values', fontweight='bold', color='#E53E3E')
+    ax1.grid(axis='x', alpha=0.3)
+    
+    # After: Unique value counts
+    ax2 = axes[1]
+    after_unique = df_after[field].nunique()
+    after_sample = df_after[field].value_counts().head(10)
+    
+    bars = ax2.barh(range(len(after_sample)), after_sample.values, color='#48BB78', alpha=0.7)
+    ax2.set_yticks(range(len(after_sample)))
+    ax2.set_yticklabels([str(x)[:30] for x in after_sample.index], fontsize=8)
+    ax2.set_xlabel('Count', fontweight='bold')
+    ax2.set_title(f'AFTER: {after_unique} unique values', fontweight='bold', color='#48BB78')
+    ax2.grid(axis='x', alpha=0.3)
+    
+    plt.tight_layout()
+    filename = f'standardization_{title.lower().replace(" ", "_")}.png'
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    print(f"✓ Saved: {filename}")
+    plt.show()
+
+def visualize_deduplication(duplicates_removed):
+    """Visualize deduplication results"""
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
+    tables = list(duplicates_removed.keys())
+    removed = list(duplicates_removed.values())
+    
+    bars = ax.bar(tables, removed, color='#D69E2E', alpha=0.7)
+    ax.set_ylabel('Duplicate Records Removed', fontweight='bold')
+    ax.set_title('Deduplication Results', fontsize=16, fontweight='bold')
+    ax.grid(axis='y', alpha=0.3)
+    
+    for bar, count in zip(bars, removed):
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., height,
+                f'{int(count)}', ha='center', va='bottom', fontweight='bold')
+    
+    plt.tight_layout()
+    plt.savefig('deduplication_results.png', dpi=300, bbox_inches='tight')
+    print("✓ Saved: deduplication_results.png")
+    plt.show()
+
+# Main execution
+if __name__ == "__main__":
+    import mysql.connector
+    import psycopg2
+    
+    print("Starting Data Standardization...")
+    
+    # Load data
+    mysql_conn = mysql.connector.connect(
+        host="localhost", user="root", 
+        password="rootpassword", database="sales_data_raw"
+    )
+    pg_conn = psycopg2.connect(
+        host="localhost", user="postgres", 
+        password="postgrespassword", database="employee_data_raw"
+    )
+    
+    customers = pd.read_sql("SELECT * FROM customers", mysql_conn)
+    products = pd.read_sql("SELECT * FROM products", mysql_conn)
+    employees = pd.read_sql("SELECT * FROM employees", pg_conn)
+    
+    # Standardize data
+    customers_std = standardize_customers(customers)
+    products_std = standardize_products(products)
+    employees_std = standardize_employees(employees)
+    
+    # Visualize standardization
+    visualize_standardization(customers, customers_std, "Customers Country", 'country')
+    visualize_standardization(products, products_std, "Products Category", 'category')
+    visualize_standardization(employees, employees_std, "Employees Department", 'department')
+    
+    # Remove duplicates
+    customers_final, cust_dup = remove_duplicates(customers_std, subset=['name', 'email'])
+    products_final, prod_dup = remove_duplicates(products_std, subset=['product_name', 'category'])
+    employees_final, emp_dup = remove_duplicates(employees_std, subset=['first_name', 'last_name', 'email'])
+    
+    duplicates_removed = {
+        'Customers': cust_dup,
+        'Products': prod_dup,
+        'Employees': emp_dup
+    }
+    
+    # Visualize deduplication
+    visualize_deduplication(duplicates_removed)
+    
+    print(f"\n{'='*60}")
+    print("STANDARDIZATION & DEDUPLICATION SUMMARY")
+    print(f"{'='*60}")
+    print(f"Customers: {cust_dup} duplicates removed")
+    print(f"Products: {prod_dup} duplicates removed")
+    print(f"Employees: {emp_dup} duplicates removed")
+    print(f"Total duplicates removed: {sum(duplicates_removed.values())}")
+    
+    mysql_conn.close()
+    pg_conn.close()
+    
+    print("\n✓ Standardization Complete!")</code></pre>
+        </div>
+
+        <div class="highlight">
+            <strong>Deliverable for Exercise 3:</strong>
+            <ul>
+                <li>Three before/after comparisons showing reduced unique values after standardization</li>
+                <li>Deduplication summary showing records removed per table</li>
+                <li>Brief explanation (2-3 paragraphs) of your standardization approach and its benefits</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECTION 7: EXERCISE 4 - OUTLIER DETECTION -->
+    <div class="section">
+        <h2>Section 7: Exercise 4 - Outlier Detection & Treatment</h2>
+        
+        <div class="exercise-box">
+            <h4>Exercise Details</h4>
+            <p><strong>Time:</strong> 20 minutes</p>
+            <p><strong>Points:</strong> 1% of Activity Grade</p>
+            <p><strong>Objective:</strong> Identify outliers using statistical methods and apply appropriate treatments with visualizations.</p>
+        </div>
+
+        <h3>Outlier Detection Methods</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Description</th>
+                    <th>Best For</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>IQR (Interquartile Range)</strong></td>
+                    <td>Values < Q1 - 1.5*IQR or > Q3 + 1.5*IQR</td>
+                    <td>General purpose, non-normal distributions</td>
+                </tr>
+                <tr>
+                    <td><strong>Z-Score</strong></td>
+                    <td>|z-score| > 3 (or 2.5)</td>
+                    <td>Normal distributions</td>
+                </tr>
+                <tr>
+                    <td><strong>Domain Knowledge</strong></td>
+                    <td>Business rules (e.g., age > 120)</td>
+                    <td>When business context is clear</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="code-container">
+            <button class="copy-button" onclick="copyCode(this)">Copy Code</button>
+            <pre><code># outlier_detection.py
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+
+sns.set_style("whitegrid")
+
+def detect_outliers_iqr(df, column):
+    """Detect outliers using IQR method"""
+    Q1 = df[column].quantile(0.25)
+    Q3 = df[column].quantile(0.75)
+    IQR = Q3 - Q1
+    
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    
+    outliers = df[(df[column] < lower_bound) | (df[column] > upper_bound)]
+    
+    return outliers, lower_bound, upper_bound
+
+def treat_outliers(df, column, method='cap'):
+    """
+    Treat outliers using specified method
+    Methods: 'cap' (winsorize), 'remove', 'median'
+    """
+    df_clean = df.copy()
+    
+    # Detect outliers using IQR
+    Q1 = df_clean[column].quantile(0.25)
+    Q3 = df_clean[column].quantile(0.75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    
+    if method == 'cap':
+        # Cap outliers at bounds (winsorization)
+        df_clean[column] = df_clean[column].clip(lower=lower_bound, upper=upper_bound)
+    elif method == 'remove':
+        # Remove outlier rows
+        df_clean = df_clean[(df_clean[column] >= lower_bound) & (df_clean[column] <= upper_bound)]
+    elif method == 'median':
+        # Replace outliers with median
+        median = df_clean[column].median()
+        df_clean.loc[(df_clean[column] < lower_bound) | (df_clean[column] > upper_bound), column] = median
+    
+    return df_clean, lower_bound, upper_bound
+
+def visualize_outliers(df_before, df_after, column, title):
+    """Create comprehensive outlier visualization"""
+    fig, axes = plt.subplots(2, 2, figsize=(15, 12))
+    fig.suptitle(f'Outlier Detection & Treatment: {title}', fontsize=16, fontweight='bold')
+    
+    # Plot 1: Box plot BEFORE
+    ax1 = axes[0, 0]
+    box1 = ax1.boxplot(df_before[column].dropna(), vert=True, patch_artist=True)
+    box1['boxes'][0].set_facecolor('#FEB2B2')
+    ax1.set_ylabel(column, fontweight='bold')
+    ax1.set_title('BEFORE: Box Plot', fontweight='bold', color='#E53E3E')
+    ax1.grid(axis='y', alpha=0.3)
+    
+    # Add outlier count annotation
+    outliers_before, lb, ub = detect_outliers_iqr(df_before, column)
+    ax1.text(0.5, 0.95, f'Outliers: {len(outliers_before)}', 
+             transform=ax1.transAxes, ha='center', 
+             bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+    
+    # Plot 2: Box plot AFTER
+    ax2 = axes[0, 1]
+    box2 = ax2.boxplot(df_after[column].dropna(), vert=True, patch_artist=True)
+    box2['boxes'][0].set_facecolor('#9AE6B4')
+    ax2.set_ylabel(column, fontweight='bold')
+    ax2.set_title('AFTER: Box Plot', fontweight='bold', color='#48BB78')
+    ax2.grid(axis='y', alpha=0.3)
+    
+    outliers_after, _, _ = detect_outliers_iqr(df_after, column)
+    ax2.text(0.5, 0.95, f'Outliers: {len(outliers_after)}', 
+             transform=ax2.transAxes, ha='center',
+             bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+    
+    # Plot 3: Histogram BEFORE
+    ax3 = axes[1, 0]
+    ax3.hist(df_before[column].dropna(), bins=30, color='#E53E3E', alpha=0.7, edgecolor='black')
+    ax3.axvline(lb, color='red', linestyle='--', label=f'Lower Bound: {lb:.2f}')
+    ax3.axvline(ub, color='red', linestyle='--', label=f'Upper Bound: {ub:.2f}')
+    ax3.set_xlabel(column, fontweight='bold')
+    ax3.set_ylabel('Frequency', fontweight='bold')
+    ax3.set_title('BEFORE: Distribution', fontweight='bold', color='#E53E3E')
+    ax3.legend()
+    ax3.grid(axis='y', alpha=0.3)
+    
+    # Plot 4: Histogram AFTER
+    ax4 = axes[1, 1]
+    ax4.hist(df_after[column].dropna(), bins=30, color='#48BB78', alpha=0.7, edgecolor='black')
+    ax4.set_xlabel(column, fontweight='bold')
+    ax4.set_ylabel('Frequency', fontweight='bold')
+    ax4.set_title('AFTER: Distribution', fontweight='bold', color='#48BB78')
+    ax4.grid(axis='y', alpha=0.3)
+    
+    plt.tight_layout()
+    filename = f'outliers_{title.lower().replace(" ", "_")}.png'
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    print(f"✓ Saved: {filename}")
+    plt.show()
+
+def print_outlier_summary(df_before, df_after, column, name):
+    """Print outlier detection summary"""
+    outliers_before, lb, ub = detect_outliers_iqr(df_before, column)
+    outliers_after, _, _ = detect_outliers_iqr(df_after, column)
+    
+    print(f"\n{'='*60}")
+    print(f"OUTLIER SUMMARY: {name} - {column}")
+    print(f"{'='*60}")
+    print(f"Lower Bound (IQR): {lb:.2f}")
+    print(f"Upper Bound (IQR): {ub:.2f}")
+    print(f"Outliers BEFORE: {len(outliers_before)}")
+    print(f"Outliers AFTER: {len(outliers_after)}")
+    print(f"Outliers treated: {len(outliers_before) - len(outliers_after)}")
+    
+    if len(outliers_before) > 0:
+        print(f"\nOutlier values BEFORE treatment:")
+        print(outliers_before[[column]].sort_values(by=column))
+
+# Main execution
+if __name__ == "__main__":
+    import mysql.connector
+    import psycopg2
+    
+    print("Starting Outlier Detection & Treatment...")
+    
+    # Load data
+    mysql_conn = mysql.connector.connect(
+        host="localhost", user="root", 
+        password="rootpassword", database="sales_data_raw"
+    )
+    pg_conn = psycopg2.connect(
+        host="localhost", user="postgres", 
+        password="postgrespassword", database="employee_data_raw"
+    )
+    
+    products = pd.read_sql("SELECT * FROM products", mysql_conn)
+    employees = pd.read_sql("SELECT * FROM employees", pg_conn)
+    
+    # Treat outliers in products price
+    products_clean, lb_price, ub_price = treat_outliers(products, 'price', method='cap')
+    print_outlier_summary(products, products_clean, 'price', "Products")
+    visualize_outliers(products, products_clean, 'price', "Products Price")
+    
+    # Treat outliers in employee salary
+    employees_clean, lb_salary, ub_salary = treat_outliers(employees, 'salary', method='cap')
+    print_outlier_summary(employees, employees_clean, 'salary', "Employees")
+    visualize_outliers(employees, employees_clean, 'salary', "Employee Salary")
+    
+    mysql_conn.close()
+    pg_conn.close()
+    
+    print("\n✓ Outlier Detection & Treatment Complete!")</code></pre>
+        </div>
+
+        <div class="highlight">
+            <strong>Deliverable for Exercise 4:</strong>
+            <ul>
+                <li>Two comprehensive 4-panel visualizations (box plots + histograms) showing before/after outlier treatment</li>
+                <li>Statistical summary of outliers detected and treated</li>
+                <li>Brief justification (1 paragraph) of your outlier treatment approach</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECTION 8: REPORT GUIDELINES & EVALUATION -->
+    <div class="section">
+        <h2>Section 8: Report Generation & Evaluation</h2>
+
+        <h3>Report Structure</h3>
+
+        <p>Generate your final report using the Academic Report Generator: <a href="https://jorgetsw.github.io/generador-reportes-academicos/" target="_blank">https://jorgetsw.github.io/generador-reportes-academicos/</a></p>
+
+        <div class="info-box">
+            <h4>Required Report Sections</h4>
+            <ol>
+                <li><strong>Student Information:</strong> Name, ID, date, activity title</li>
+                <li><strong>Introduction:</strong> Brief overview of data quality issues and cleaning approach (1-2 paragraphs)</li>
+                <li><strong>Exercise 1 - Data Quality Assessment:</strong> Quality assessment dashboard screenshot, summary of critical issues, Python code</li>
+                <li><strong>Exercise 2 - Missing Data Handling:</strong> Three before/after visualization pairs, completion rate statistics, justification of imputation strategies, Python code</li>
+                <li><strong>Exercise 3 - Data Standardization:</strong> Standardization impact visualizations, deduplication results, explanation of approach, Python code</li>
+                <li><strong>Exercise 4 - Outlier Detection:</strong> Four-panel outlier visualizations, statistical summaries, treatment justification, Python code</li>
+                <li><strong>Conclusions:</strong> Summary of improvements, lessons learned, challenges faced, real-world applications</li>
+                <li><strong>References:</strong> Tools, libraries, and resources used</li>
+            </ol>
+        </div>
+
+        <h3>Deliverable Format</h3>
+
+        <div class="note">
+            <strong>File Naming:</strong> Activity09_FirstName_LastName.html<br>
+            <strong>Submission:</strong> Upload to Teams by <strong>February 17, 2026, 11:59 PM</strong><br>
+            <strong>File Size:</strong> Ensure all images are embedded and total file size < 50MB
+        </div>
+
+        <h3>Evaluation Rubric</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Criterion</th>
+                    <th style="width: 50%;">Description</th>
+                    <th style="width: 20%;">Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Exercise 1: Quality Assessment</strong></td>
+                    <td>
+                        • Comprehensive profiling of all tables<br>
+                        • Clear identification of quality issues<br>
+                        • Well-designed visualization dashboard<br>
+                        • Detailed written summary
+                    </td>
+                    <td>4%</td>
+                </tr>
+                <tr>
+                    <td><strong>Exercise 2: Missing Data</strong></td>
+                    <td>
+                        • Appropriate imputation strategies<br>
+                        • Clear before/after visualizations<br>
+                        • Statistical validation<br>
+                        • Well-justified approach
+                    </td>
+                    <td>3%</td>
+                </tr>
+                <tr>
+                    <td><strong>Exercise 3: Standardization</strong></td>
+                    <td>
+                        • Effective format standardization<br>
+                        • Successful deduplication<br>
+                        • Impact visualizations<br>
+                        • Clear methodology explanation
+                    </td>
+                    <td>2%</td>
+                </tr>
+                <tr>
+                    <td><strong>Exercise 4: Outliers</strong></td>
+                    <td>
+                        • Correct outlier detection<br>
+                        • Appropriate treatment method<br>
+                        • Comprehensive visualizations<br>
+                        • Statistical validation
+                    </td>
+                    <td>1%</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="warning-box">
+            <h4>Deductions</h4>
+            <ul>
+                <li>Missing visualizations: -0.5% per visualization</li>
+                <li>Incomplete code: -0.5% per exercise</li>
+                <li>Poor report formatting: -0.5%</li>
+                <li>Late submission: -1% per day</li>
+                <li>Insufficient documentation: -1%</li>
+            </ul>
+        </div>
+
+        <h3>Success Tips</h3>
+
+        <div class="highlight">
+            <ul>
+                <li>Start early - data cleaning takes longer than expected</li>
+                <li>Document your decisions as you work</li>
+                <li>Test your code incrementally</li>
+                <li>Save visualizations with descriptive filenames</li>
+                <li>Review the rubric before submitting</li>
+                <li>Ask for help if you encounter issues</li>
+            </ul>
+        </div>
+
+        <h3>Appendix: Useful Resources</h3>
+
+        <ul>
+            <li><strong>Pandas Documentation:</strong> <a href="https://pandas.pydata.org/docs/" target="_blank">https://pandas.pydata.org/docs/</a></li>
+            <li><strong>Data Cleaning Guide:</strong> Python for Data Analysis by Wes McKinney</li>
+            <li><strong>Visualization Best Practices:</strong> Matplotlib & Seaborn documentation</li>
+            <li><strong>Statistical Methods:</strong> Scipy.stats documentation</li>
+        </ul>
+    </div>
+
+    <script>
+        function copyCode(button) {
+            const codeBlock = button.nextElementSibling;
+            const code = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = 'Copy Code';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
