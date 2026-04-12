@@ -1,3 +1,13 @@
-ACT08_YAHEL_CARDENAS.zip
-ACT08_YAHEL_CARDENAS.zip
-*.swp
+# Data files
+*.csv
+*.json
+
+# Environments
+venv/
+.venv/
+env/
+__pycache__/
+
+# OS files
+.DS_Store
+Thumbs.db

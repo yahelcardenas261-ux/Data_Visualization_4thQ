@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # MySQL Database Service
+  mysql-db:
+    image: mysql:8.0                    # Use MySQL version 8.0
+    container_name: mysql_container     # Name for easy reference
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass123  # Root user password
+      MYSQL_DATABASE: company_db        # Create this database on startup
+      MYSQL_USER: datauser              # Create this user
+      MYSQL_PASSWORD: datapass123       # Password for datauser
+    ports:
+      - "3306:3306"                     # Map host port 3306 to container port 3306
+    volumes:
+      - mysql_data:/var/lib/mysql:z       # Persist data in named volume
+      - ./init_mysql.sql:/docker-entrypoint-initdb.d/init.sql:z  # Run initialization script
+    networks:
+      - data_network                    # Connect to custom network
+
+  # PostgreSQL Database Service
+  postgres-db:
+    image: postgres:15                  # Use PostgreSQL version 15
+    container_name: postgres_container  # Name for easy reference
+    environment:
+      POSTGRES_PASSWORD: rootpass123    # Root user password
+      POSTGRES_DB: finance_db           # Create this database on startup
+      POSTGRES_USER: datauser           # Create this user (replaces default 'postgres' user)
+    ports:
+      - "5432:5432"                     # Map host port 5432 to container port 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data:z  # Persist data in named volume
+      - ./init_postgres.sql:/docker-entrypoint-initdb.d/init.sql:z  # Run initialization script
+    networks:
+      - data_network                    # Connect to custom network
+
+# Define named volumes for data persistence
+volumes:
+  mysql_data:                           # Volume for MySQL data
+  postgres_data:                        # Volume for PostgreSQL data
+
+# Define custom network for inter-container communication
+networks:
+  data_network:                         # Network name
+    driver: bridge                      # Use bridge driver (default)
