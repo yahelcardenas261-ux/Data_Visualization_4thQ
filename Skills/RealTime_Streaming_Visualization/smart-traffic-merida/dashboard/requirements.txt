@@ -1,0 +1,5 @@
+pandas
+plotly
+dash
+influxdb-client
+numpy==1.26.4

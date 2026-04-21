@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 2 — Transformation, Star Schema & Live Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f6f2;
+    --ink: #111;
+    --muted: #888;
+    --accent: #e84a27;
+    --line: #d8d6d0;
+    --code-bg: #111;
+    --code-fg: #f0ead6;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-weight: 300;
+    line-height: 1.7;
+    padding: 0 1.5rem 6rem;
+    max-width: 820px;
+    margin: 0 auto;
+  }
+
+  nav {
+    position: sticky; top: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    padding: 0.75rem 0;
+    display: flex; gap: 1.2rem; flex-wrap: wrap;
+    font-family: var(--mono); font-size: 0.7rem; z-index: 10;
+  }
+  nav a { color: var(--muted); text-decoration: none; transition: color 0.15s; }
+  nav a:hover { color: var(--accent); }
+
+  header { padding: 4rem 0 2.5rem; border-bottom: 1px solid var(--line); margin-bottom: 3rem; }
+  .tag {
+    font-family: var(--mono); font-size: 0.7rem; color: var(--accent);
+    letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1rem; display: block;
+  }
+  h1 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 500;
+    line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 1rem;
+  }
+  .subtitle { color: var(--muted); font-size: 0.95rem; max-width: 540px; }
+
+  .meta { display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+  .meta-item { font-family: var(--mono); font-size: 0.75rem; }
+  .meta-item span { color: var(--muted); display: block; margin-bottom: 0.2rem; }
+  .meta-item strong { color: var(--ink); font-weight: 600; }
+
+  .arch {
+    background: var(--code-bg); color: var(--code-fg);
+    font-family: var(--mono); font-size: 0.78rem;
+    padding: 1.5rem; border-radius: 2px; overflow-x: auto;
+    margin: 1.5rem 0 2.5rem; line-height: 2.1;
+    white-space: pre;
+  }
+  .arch .hl { color: var(--accent); }
+  .arch .dim { color: #555; }
+
+  section { margin-bottom: 3.5rem; }
+
+  h2 {
+    font-size: 1rem; font-weight: 500; font-family: var(--mono);
+    letter-spacing: 0.05em; color: var(--accent); text-transform: uppercase;
+    margin-bottom: 1.2rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--line);
+    display: flex; align-items: baseline; gap: 0.8rem;
+  }
+  h2 .num { font-size: 0.65rem; color: var(--muted); }
+
+  h3 { font-size: 0.95rem; font-weight: 500; margin: 2rem 0 0.6rem; font-family: var(--mono); color: var(--ink); }
+
+  p { margin-bottom: 0.9rem; font-size: 0.95rem; }
+
+  .steps { list-style: none; }
+  .steps li {
+    display: grid; grid-template-columns: 4.5rem 1fr;
+    gap: 0 1.2rem; padding: 1rem 0; border-bottom: 1px solid var(--line); align-items: start;
+  }
+  .steps li:last-child { border-bottom: none; }
+  .step-time { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); padding-top: 0.2rem; }
+  .step-title { font-weight: 500; font-size: 0.93rem; margin-bottom: 0.3rem; }
+  .step-desc { font-size: 0.88rem; color: var(--muted); }
+
+  /* CODE BLOCKS */
+  .code-block { position: relative; margin: 1rem 0 1.6rem; }
+  .code-block pre {
+    background: var(--code-bg); color: var(--code-fg);
+    font-family: var(--mono); font-size: 0.78rem; line-height: 1.75;
+    padding: 2.8rem 1.5rem 1.4rem;
+    border-radius: 2px; overflow-x: auto; margin: 0;
+  }
+  .code-label {
+    position: absolute; top: 0; left: 0; right: 0;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.4rem 0.7rem 0.4rem 1rem;
+    background: #1a1a1a; border-radius: 2px 2px 0 0; border-bottom: 1px solid #2a2a2a;
+  }
+  .code-filename { font-family: var(--mono); font-size: 0.67rem; color: #888; letter-spacing: 0.05em; }
+  .copy-btn {
+    font-family: var(--mono); font-size: 0.64rem; color: #888;
+    background: none; border: 1px solid #333; padding: 0.18rem 0.55rem;
+    border-radius: 2px; cursor: pointer; transition: all 0.15s; letter-spacing: 0.04em;
+  }
+  .copy-btn:hover { color: var(--code-fg); border-color: #666; }
+  .copy-btn.copied { color: #b5e8a8; border-color: #b5e8a8; }
+
+  /* EXPLAIN BOXES */
+  .explain {
+    background: #fff; border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    padding: 1.2rem 1.4rem; margin: 0.4rem 0 1.8rem; font-size: 0.88rem;
+  }
+  .explain-title {
+    font-family: var(--mono); font-size: 0.7rem; font-weight: 600;
+    color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.7rem;
+  }
+  .explain p { font-size: 0.88rem; margin-bottom: 0.55rem; }
+  .explain p:last-child { margin-bottom: 0; }
+
+  /* DEEP DIVE ACCORDION */
+  details { border: 1px solid var(--line); margin: 1rem 0 1.5rem; background: #fff; }
+  summary {
+    font-family: var(--mono); font-size: 0.78rem; font-weight: 600;
+    padding: 0.9rem 1.2rem; cursor: pointer;
+    display: flex; align-items: center; gap: 0.6rem;
+    color: var(--ink); letter-spacing: 0.03em; list-style: none; user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: '▶'; font-size: 0.6rem; color: var(--accent); transition: transform 0.2s; flex-shrink: 0; }
+  details[open] summary::before { transform: rotate(90deg); }
+  details[open] summary { border-bottom: 1px solid var(--line); }
+  .details-body { padding: 1.2rem 1.4rem; font-size: 0.88rem; line-height: 1.75; }
+  .details-body p { margin-bottom: 0.7rem; }
+  .details-body p:last-child { margin-bottom: 0; }
+  .details-body strong { font-weight: 500; }
+
+  /* SCHEMA TABLE */
+  .schema-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin: 1.2rem 0 1.8rem; }
+  .schema-card { background: #fff; border: 1px solid var(--line); }
+  .schema-head {
+    background: var(--ink); color: #fff;
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
+    padding: 0.6rem 1rem; letter-spacing: 0.05em;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .schema-head .type-tag { font-size: 0.6rem; color: var(--accent); font-weight: 400; }
+  .schema-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    padding: 0.4rem 1rem; font-family: var(--mono); font-size: 0.72rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .schema-row:last-child { border-bottom: none; }
+  .schema-col { color: var(--ink); }
+  .schema-type { color: var(--muted); }
+  .pk { color: var(--accent); }
+
+  /* CONCEPT CARDS */
+  .concepts {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 1px; background: var(--line); border: 1px solid var(--line); margin: 1.2rem 0 2rem;
+  }
+  .concept { background: var(--bg); padding: 1.2rem; }
+  .concept-term { font-family: var(--mono); font-size: 0.78rem; font-weight: 600; color: var(--accent); margin-bottom: 0.4rem; }
+  .concept-def { font-size: 0.85rem; color: var(--muted); }
+
+  /* ETL vs ELT comparison */
+  .compare {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1px; background: var(--line); border: 1px solid var(--line); margin: 1.2rem 0 1.8rem;
+  }
+  .compare-col { background: var(--bg); padding: 1.2rem; }
+  .compare-col h4 { font-family: var(--mono); font-size: 0.8rem; font-weight: 600; color: var(--accent); margin-bottom: 0.8rem; }
+  .compare-col p { font-size: 0.84rem; color: var(--muted); margin-bottom: 0.5rem; }
+  .compare-col p:last-child { margin-bottom: 0; }
+  .compare-col strong { color: var(--ink); font-weight: 500; }
+
+  .note { border-left: 2px solid var(--accent); padding: 0.8rem 1rem; margin: 1.2rem 0; font-size: 0.88rem; background: #fff; }
+  .note strong { font-weight: 500; color: var(--accent); }
+
+  /* CHECKLIST */
+  .checklist { list-style: none; }
+  .checklist li {
+    font-size: 0.9rem; padding: 0.55rem 0; border-bottom: 1px solid var(--line);
+    display: flex; gap: 0.8rem; align-items: center; cursor: pointer; user-select: none;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li .box { font-family: var(--mono); color: var(--muted); flex-shrink: 0; font-size: 1rem; }
+  .checklist li.done .box { color: #5cb85c; }
+  .checklist li.done { color: var(--muted); text-decoration: line-through; }
+
+  /* STEP BADGES */
+  .step-badge {
+    display: inline-block; font-family: var(--mono); font-size: 0.65rem;
+    background: var(--accent); color: #fff; padding: 0.1rem 0.5rem;
+    border-radius: 2px; letter-spacing: 0.06em; text-transform: uppercase;
+    margin-right: 0.5rem; vertical-align: middle;
+  }
+
+  /* LOOKER STEPS */
+  .looker-steps { list-style: none; counter-reset: ls; }
+  .looker-steps li {
+    counter-increment: ls;
+    display: flex; gap: 0.9rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.9rem; line-height: 1.6;
+  }
+  .looker-steps li:last-child { border-bottom: none; }
+  .looker-steps li::before {
+    content: counter(ls);
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
+    color: var(--accent); flex-shrink: 0; min-width: 1.2rem;
+    padding-top: 0.15rem;
+  }
+
+  code { font-family: var(--mono); font-size: 0.82em; background: #e8e6e0; padding: 0.1em 0.35em; border-radius: 2px; }
+
+  footer {
+    margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: 0.7rem; color: var(--muted);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#recap">recap</a>
+  <a href="#concepts">etl vs elt</a>
+  <a href="#transform">transformer</a>
+  <a href="#schema">star schema</a>
+  <a href="#looker">looker studio</a>
+  <a href="#discussion">discussion</a>
+  <a href="#checklist">checklist</a>
+</nav>
+
+<!-- HEADER -->
+<header>
+  <span class="tag">Data Engineering · Class 2 of 2</span>
+  <h1>Transformation, Star Schema<br>&amp; Live Dashboard</h1>
+  <p class="subtitle">Add a transformation layer to the pipeline, load clean data into a star schema, and visualize everything in a live Looker Studio dashboard connected to PostgreSQL.</p>
+  <div class="meta">
+    <div class="meta-item"><span>duration</span><strong>~2.5 hours</strong></div>
+    <div class="meta-item"><span>level</span><strong>beginner</strong></div>
+    <div class="meta-item"><span>stack</span><strong>Python · Kafka · PostgreSQL · Looker Studio</strong></div>
+    <div class="meta-item"><span>session</span><strong>2 / 2</strong></div>
+  </div>
+</header>
+
+<!-- 00 RECAP -->
+<section id="recap">
+  <h2><span class="num">00</span> Where we left off</h2>
+  <p>In Class 1 we built the raw ingestion layer. Orders flow from a Python producer through Kafka into a PostgreSQL table called <code>orders_raw</code>. The data arrives untransformed — exactly as the producer generated it.</p>
+
+  <div class="arch">
+<span class="dim">CLASS 1 — built</span>
+[ Producer ] ──► [ Kafka ] ──► [ Consumer ] ──► <span class="hl">orders_raw</span>
+  fake orders      topic        reads &amp; saves     raw, unprocessed
+
+<span class="hl">CLASS 2 — adding today</span>
+<span class="hl">orders_raw</span> ──► [ Transformer ] ──► <span class="hl">orders_clean</span> + <span class="hl">dim_*</span> tables ──► [ Looker Studio ]
+  raw rows          Python script       star schema                              live dashboard
+  </div>
+
+  <p>Today we add the <strong>T</strong> in ETL — the transformation layer — and connect a live dashboard to the result.</p>
+</section>
+
+<!-- 01 TIMELINE -->
+<section>
+  <h2><span class="num">01</span> Session timeline</h2>
+  <ul class="steps">
+    <li>
+      <span class="step-time">0:00–0:20</span>
+      <div><div class="step-title">ETL vs ELT — when to use each</div><div class="step-desc">Conceptual difference, real-world examples, where Kafka fits in both patterns.</div></div>
+    </li>
+    <li>
+      <span class="step-time">0:20–0:55</span>
+      <div><div class="step-title">Build the Transformer</div><div class="step-desc">Python script that reads orders_raw, cleans, enriches, and categorizes data.</div></div>
+    </li>
+    <li>
+      <span class="step-time">0:55–1:25</span>
+      <div><div class="step-title">Design and load the Star Schema</div><div class="step-desc">Create dimension and fact tables. Run the transformer and verify data quality.</div></div>
+    </li>
+    <li>
+      <span class="step-time">1:25–1:35</span>
+      <div><div class="step-title">Break</div><div class="step-desc">—</div></div>
+    </li>
+    <li>
+      <span class="step-time">1:35–2:15</span>
+      <div><div class="step-title">Connect Looker Studio to PostgreSQL</div><div class="step-desc">Add the PostgreSQL connector, build charts: revenue by product, region heatmap, trend line.</div></div>
+    </li>
+    <li>
+      <span class="step-time">2:15–2:30</span>
+      <div><div class="step-title">Discussion: ETL vs ELT + Q&amp;A</div><div class="step-desc">When would you use each? What would change if we moved to the cloud?</div></div>
+    </li>
+  </ul>
+</section>
+
+<!-- 02 ETL vs ELT -->
+<section id="concepts">
+  <h2><span class="num">02</span> ETL vs ELT</h2>
+  <p>Both patterns move data from source to destination — the difference is <em>where</em> transformation happens.</p>
+
+  <div class="compare">
+    <div class="compare-col">
+      <h4>ETL — Extract, Transform, Load</h4>
+      <p><strong>Transform first, then load.</strong> Data is cleaned and shaped before it enters the target system.</p>
+      <p>Best when the destination has limited compute (e.g. a small Postgres), or when data quality must be enforced before storage.</p>
+      <p><strong>Our pipeline today:</strong> orders_raw → Python transformer → star schema in Postgres.</p>
+    </div>
+    <div class="compare-col">
+      <h4>ELT — Extract, Load, Transform</h4>
+      <p><strong>Load raw first, transform inside.</strong> Raw data lands in the warehouse and SQL/dbt handles transformation.</p>
+      <p>Best when the destination is powerful (BigQuery, Snowflake, Redshift) and transformation can run as SQL at scale.</p>
+      <p><strong>Cloud version of this pipeline:</strong> Kafka → Pub/Sub → BigQuery raw → dbt → dashboard.</p>
+    </div>
+  </div>
+
+  <details>
+    <summary>📖 Where does Kafka fit in both patterns?</summary>
+    <div class="details-body">
+      <p>Kafka is the ingestion and buffering layer — it sits between the source and the transformation step in both ETL and ELT.</p>
+      <p>In <strong>ETL</strong>: Producer → Kafka → Consumer (transforms) → clean DB. Transformation lives in the consumer.</p>
+      <p>In <strong>ELT</strong>: Producer → Kafka → Consumer (raw load) → warehouse → SQL transforms. Transformation moves to the warehouse.</p>
+      <p>Kafka's role doesn't change: it decouples the producer from whatever comes after. What changes is whether the consumer transforms before or after storing.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>📖 What is a Star Schema and why does it matter for dashboards?</summary>
+    <div class="details-body">
+      <p>A <strong>star schema</strong> organizes data into one central <em>fact table</em> (the measurements — in our case, each order) surrounded by <em>dimension tables</em> (the context — products, regions, time).</p>
+      <p>It's called a star because the diagram looks like one: fact table in the center, dimensions radiating outward.</p>
+      <p><strong>Why it matters for dashboards:</strong> BI tools like Looker Studio, Power BI, and Tableau are optimized for this shape. They can generate charts and filters directly from the relationships between fact and dimension tables without complex SQL.</p>
+      <p><strong>Normalized (3NF) vs Star:</strong> A normalized schema minimizes redundancy — great for transactional systems. A star schema accepts controlled redundancy in exchange for simpler, faster analytical queries.</p>
+    </div>
+  </details>
+</section>
+
+<!-- 03 TRANSFORMER -->
+<section id="transform">
+  <h2><span class="num">03</span> The Transformer</h2>
+  <p>The transformer is a standalone Python script — not a Kafka consumer. It reads from <code>orders_raw</code>, applies cleaning and enrichment logic, and loads the results into the star schema tables.</p>
+  <p>This is a <strong>batch transformation</strong>: run it once, or schedule it with <code>cron</code> or Airflow. In Class 1 we did real-time ingestion; now we do scheduled transformation — a common real-world combination.</p>
+
+  <h3>Step 1 — Create the star schema tables</h3>
+
+  <div class="code-block">
+    <div class="code-label">
+      <span class="code-filename">terminal — connect to postgres</span>
+      <button class="copy-btn" data-target="code-connect">copy</button>
+    </div>
+    <pre id="code-connect">docker exec -it sales-pipeline_postgres_1 psql -U pipeline -d sales</pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">
+      <span class="code-filename">postgres prompt — create star schema</span>
+      <button class="copy-btn" data-target="code-schema">copy</button>
+    </div>
+    <pre id="code-schema">-- DIMENSION: products
+CREATE TABLE dim_product (
+    product_id   VARCHAR(10) PRIMARY KEY,
+    product_name TEXT,
+    price_tier   TEXT   -- 'budget' | 'mid-range' | 'premium'
+);
+
+-- DIMENSION: regions
+CREATE TABLE dim_region (
+    region_id   SERIAL PRIMARY KEY,
+    region_name VARCHAR(20) UNIQUE
+);
+
+-- DIMENSION: time
+CREATE TABLE dim_time (
+    time_id   SERIAL PRIMARY KEY,
+    ts        TIMESTAMP UNIQUE,
+    year      INTEGER,
+    month     INTEGER,
+    day       INTEGER,
+    hour      INTEGER,
+    weekday   TEXT
+);
+
+-- FACT: orders (clean, enriched)
+CREATE TABLE fact_orders (
+    id          SERIAL PRIMARY KEY,
+    order_id    VARCHAR(36),
+    product_id  VARCHAR(10) REFERENCES dim_product(product_id),
+    region_id   INTEGER     REFERENCES dim_region(region_id),
+    time_id     INTEGER     REFERENCES dim_time(time_id),
+    customer    TEXT,
+    qty         INTEGER,
+    unit_price  NUMERIC(10,2),
+    total       NUMERIC(10,2),
+    revenue_cat TEXT,   -- 'low' | 'medium' | 'high'
+    inserted_at TIMESTAMP DEFAULT NOW()
+);
+
+\q</pre>
+  </div>
+
+  <div class="explain">
+    <div class="explain-title">Schema design decisions</div>
+    <p><strong><code>dim_product.price_tier</code></strong> — A derived column: we categorize products by price range during transformation. "Laptop" → premium, "Mouse" → budget. This is a classic transformation that would be expensive to do at query time on every dashboard load.</p>
+    <p><strong><code>dim_time</code></strong> — Breaking timestamps into year/month/day/hour/weekday columns makes time-based filtering and grouping trivially fast in BI tools. "Show me sales by hour of day" becomes a simple <code>GROUP BY hour</code> instead of <code>EXTRACT(HOUR FROM ts)</code> on millions of rows.</p>
+    <p><strong><code>fact_orders.revenue_cat</code></strong> — Categorizes each order as low/medium/high revenue. Useful for segmentation charts without needing CASE statements in every query.</p>
+    <p><strong>Foreign keys</strong> — The <code>REFERENCES</code> constraints enforce referential integrity. A fact row cannot reference a product that doesn't exist in <code>dim_product</code>. This prevents orphan records from entering the analytical layer.</p>
+  </div>
+
+  <h3>Step 2 — transformer.py</h3>
+
+  <div class="code-block">
+    <div class="code-label">
+      <span class="code-filename">transformer.py</span>
+      <button class="copy-btn" data-target="code-transformer">copy</button>
+    </div>
+    <pre id="code-transformer">"""
+transformer.py
+Reads from orders_raw, transforms, and loads into the star schema.
+Run after consumer.py has been collecting data for a while.
+"""
+
+import psycopg2
+import psycopg2.extras
+
+# ── connection ────────────────────────────────────────────────────────────────
+conn = psycopg2.connect(
+    host="localhost", port=5432,
+    dbname="sales", user="pipeline", password="pipeline"
+)
+cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+# ── helpers ───────────────────────────────────────────────────────────────────
+def price_tier(price):
+    if price <= 60:    return 'budget'
+    if price <= 500:   return 'mid-range'
+    return 'premium'
+
+def revenue_cat(total):
+    if total < 100:    return 'low'
+    if total < 500:    return 'medium'
+    return 'high'
+
+WEEKDAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+
+# ── extract: read all raw orders ──────────────────────────────────────────────
+print("Extracting from orders_raw...")
+cur.execute("SELECT * FROM orders_raw ORDER BY id")
+raw_orders = cur.fetchall()
+print(f"  {len(raw_orders)} rows found")
+
+# ── transform + load ──────────────────────────────────────────────────────────
+print("Transforming and loading...")
+
+loaded = 0
+for row in raw_orders:
+
+    # 1. populate dim_product (upsert)
+    cur2 = conn.cursor()
+    cur2.execute("""
+        INSERT INTO dim_product (product_id, product_name, price_tier)
+        VALUES (%s, %s, %s)
+        ON CONFLICT (product_id) DO NOTHING
+    """, (row['product_id'], row['product'], price_tier(float(row['unit_price']))))
+
+    # 2. populate dim_region (upsert)
+    cur2.execute("""
+        INSERT INTO dim_region (region_name)
+        VALUES (%s)
+        ON CONFLICT (region_name) DO NOTHING
+    """, (row['region'],))
+
+    # 3. get region_id
+    cur2.execute("SELECT region_id FROM dim_region WHERE region_name = %s", (row['region'],))
+    region_id = cur2.fetchone()[0]
+
+    # 4. populate dim_time (upsert on ts)
+    ts = row['ts']
+    if ts:
+        cur2.execute("""
+            INSERT INTO dim_time (ts, year, month, day, hour, weekday)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            ON CONFLICT (ts) DO NOTHING
+        """, (
+            ts,
+            ts.year, ts.month, ts.day, ts.hour,
+            WEEKDAYS[ts.weekday()]
+        ))
+        cur2.execute("SELECT time_id FROM dim_time WHERE ts = %s", (ts,))
+        time_id = cur2.fetchone()[0]
+    else:
+        time_id = None
+
+    # 5. insert into fact_orders (skip duplicates by order_id)
+    cur2.execute("SELECT 1 FROM fact_orders WHERE order_id = %s", (row['order_id'],))
+    if not cur2.fetchone():
+        cur2.execute("""
+            INSERT INTO fact_orders
+                (order_id, product_id, region_id, time_id,
+                 customer, qty, unit_price, total, revenue_cat)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """, (
+            row['order_id'], row['product_id'], region_id, time_id,
+            row['customer'], row['qty'],
+            row['unit_price'], row['total'],
+            revenue_cat(float(row['total']))
+        ))
+        loaded += 1
+
+    conn.commit()
+
+print(f"  {loaded} new rows loaded into fact_orders")
+print("Done.")</pre>
+  </div>
+
+  <div class="explain">
+    <div class="explain-title">Key patterns explained</div>
+    <p><strong><code>ON CONFLICT (product_id) DO NOTHING</code></strong> — An upsert pattern. If the product already exists in <code>dim_product</code>, skip it. This makes the transformer idempotent — safe to run multiple times without creating duplicate dimension rows.</p>
+    <p><strong><code>price_tier()</code> and <code>revenue_cat()</code></strong> — These are business rules encoded as Python functions. In a real company, these thresholds would come from a config file or database table so analysts can change them without touching code.</p>
+    <p><strong>Duplicate check on <code>order_id</code></strong> — Before inserting into <code>fact_orders</code>, we verify the order hasn't been loaded before. This prevents double-counting if the transformer is run multiple times.</p>
+    <p><strong><code>ts.weekday()</code></strong> — Python's <code>datetime.weekday()</code> returns 0=Monday, 6=Sunday. We map this to readable day names for dashboard labels.</p>
+  </div>
+
+  <div class="note">
+    <strong>Run it:</strong> With the consumer running (data accumulating in orders_raw), open a third terminal and run <code>python transformer.py</code>. Check the output — it should report how many rows were loaded. Run it again — it should report 0 new rows (idempotent).
+  </div>
+
+  <details>
+    <summary>📖 What is idempotency and why does it matter in ETL?</summary>
+    <div class="details-body">
+      <p>An operation is <strong>idempotent</strong> if running it multiple times produces the same result as running it once. For ETL jobs, this is critical.</p>
+      <p>Real pipelines fail — network issues, database timeouts, out-of-memory errors. When a job fails halfway through, you need to be able to re-run it safely without corrupting or duplicating data.</p>
+      <p>Our transformer is idempotent because: (a) dimension upserts use <code>ON CONFLICT DO NOTHING</code>, and (b) fact inserts check for existing <code>order_id</code> before inserting. No matter how many times you run it, the final state is always correct.</p>
+    </div>
+  </details>
+</section>
+
+<!-- 04 STAR SCHEMA -->
+<section id="schema">
+  <h2><span class="num">04</span> Star schema — verify the result</h2>
+  <p>After running the transformer, verify the data landed correctly in all four tables.</p>
+
+  <div class="schema-grid">
+    <div class="schema-card">
+      <div class="schema-head">dim_product <span class="type-tag">dimension</span></div>
+      <div class="schema-row"><span class="schema-col pk">product_id</span><span class="schema-type">VARCHAR · PK</span></div>
+      <div class="schema-row"><span class="schema-col">product_name</span><span class="schema-type">TEXT</span></div>
+      <div class="schema-row"><span class="schema-col">price_tier</span><span class="schema-type">TEXT · derived</span></div>
+    </div>
+    <div class="schema-card">
+      <div class="schema-head">dim_region <span class="type-tag">dimension</span></div>
+      <div class="schema-row"><span class="schema-col pk">region_id</span><span class="schema-type">SERIAL · PK</span></div>
+      <div class="schema-row"><span class="schema-col">region_name</span><span class="schema-type">VARCHAR · unique</span></div>
+    </div>
+    <div class="schema-card">
+      <div class="schema-head">dim_time <span class="type-tag">dimension</span></div>
+      <div class="schema-row"><span class="schema-col pk">time_id</span><span class="schema-type">SERIAL · PK</span></div>
+      <div class="schema-row"><span class="schema-col">ts</span><span class="schema-type">TIMESTAMP · unique</span></div>
+      <div class="schema-row"><span class="schema-col">year / month / day</span><span class="schema-type">INTEGER · derived</span></div>
+      <div class="schema-row"><span class="schema-col">hour</span><span class="schema-type">INTEGER · derived</span></div>
+      <div class="schema-row"><span class="schema-col">weekday</span><span class="schema-type">TEXT · derived</span></div>
+    </div>
+    <div class="schema-card">
+      <div class="schema-head">fact_orders <span class="type-tag">fact</span></div>
+      <div class="schema-row"><span class="schema-col pk">id</span><span class="schema-type">SERIAL · PK</span></div>
+      <div class="schema-row"><span class="schema-col">order_id</span><span class="schema-type">VARCHAR</span></div>
+      <div class="schema-row"><span class="schema-col">product_id</span><span class="schema-type">FK → dim_product</span></div>
+      <div class="schema-row"><span class="schema-col">region_id</span><span class="schema-type">FK → dim_region</span></div>
+      <div class="schema-row"><span class="schema-col">time_id</span><span class="schema-type">FK → dim_time</span></div>
+      <div class="schema-row"><span class="schema-col">qty / unit_price / total</span><span class="schema-type">measures</span></div>
+      <div class="schema-row"><span class="schema-col">revenue_cat</span><span class="schema-type">TEXT · derived</span></div>
+    </div>
+  </div>
+
+  <h3>Verification queries</h3>
+
+  <div class="code-block">
+    <div class="code-label">
+      <span class="code-filename">postgres prompt — verify star schema</span>
+      <button class="copy-btn" data-target="code-verify">copy</button>
+    </div>
+    <pre id="code-verify">-- Row counts in all tables
+SELECT 'dim_product'  AS tbl, COUNT(*) FROM dim_product
+UNION ALL
+SELECT 'dim_region',  COUNT(*) FROM dim_region
+UNION ALL
+SELECT 'dim_time',    COUNT(*) FROM dim_time
+UNION ALL
+SELECT 'fact_orders', COUNT(*) FROM fact_orders;
+
+-- Revenue by product (joining fact + dimension)
+SELECT
+    p.product_name,
+    p.price_tier,
+    COUNT(*)        AS orders,
+    SUM(f.qty)      AS units,
+    SUM(f.total)    AS revenue
+FROM fact_orders f
+JOIN dim_product p USING (product_id)
+GROUP BY p.product_name, p.price_tier
+ORDER BY revenue DESC;
+
+-- Orders by region
+SELECT
+    r.region_name,
+    COUNT(*)     AS orders,
+    SUM(f.total) AS revenue
+FROM fact_orders f
+JOIN dim_region r USING (region_id)
+GROUP BY r.region_name
+ORDER BY revenue DESC;
+
+-- Orders by hour of day
+SELECT
+    t.hour,
+    t.weekday,
+    COUNT(*) AS orders
+FROM fact_orders f
+JOIN dim_time t USING (time_id)
+GROUP BY t.hour, t.weekday
+ORDER BY t.hour;</pre>
+  </div>
+</section>
+
+<!-- 05 LOOKER STUDIO -->
+<section id="looker">
+  <h2><span class="num">05</span> Connecting Looker Studio</h2>
+  <p>Looker Studio (formerly Google Data Studio) is a free, browser-based BI tool that connects directly to PostgreSQL. We'll build three charts from the star schema we just created.</p>
+
+  <div class="note">
+    <strong>Prerequisite:</strong> Your PostgreSQL must be reachable from Looker Studio's servers. Since ours runs on localhost, we need to expose it. The simplest option for class: use <strong>ngrok</strong> to create a temporary public tunnel. Run <code>ngrok tcp 5432</code> and use the generated hostname in the connector.
+  </div>
+
+  <h3>Option A — ngrok tunnel (quick, for class)</h3>
+
+  <div class="code-block">
+    <div class="code-label">
+      <span class="code-filename">terminal</span>
+      <button class="copy-btn" data-target="code-ngrok">copy</button>
+    </div>
+    <pre id="code-ngrok"># Install ngrok if needed: https://ngrok.com/download
+# Then:
+ngrok tcp 5432
+
+# Output will look like:
+# Forwarding  tcp://0.tcp.ngrok.io:12345 -> localhost:5432
+# Use "0.tcp.ngrok.io" as host and "12345" as port in Looker Studio</pre>
+  </div>
+
+  <details>
+    <summary>📖 Option B — run everything on a cloud VM (production approach)</summary>
+    <div class="details-body">
+      <p>For a real production setup, the entire stack (Kafka, Postgres, Python scripts) runs on a cloud VM with a public IP — for example a Google Cloud Compute Engine instance or an AWS EC2 instance.</p>
+      <p>You would open port 5432 in the firewall rules, and Looker Studio connects directly to the public IP without ngrok.</p>
+      <p>This is also how you'd connect Power BI Desktop: install the PostgreSQL ODBC driver, then use "Get Data → PostgreSQL database" and enter the server's public IP.</p>
+    </div>
+  </details>
+
+  <h3>Add the PostgreSQL data source in Looker Studio</h3>
+  <ol class="looker-steps">
+    <li>Go to <strong>lookerstudio.google.com</strong> → Create → Report.</li>
+    <li>Search for the <strong>PostgreSQL</strong> connector and select it.</li>
+    <li>Enter the connection details using the block below, then click <strong>Authenticate</strong>.</li>
+    <li>Select table <code>fact_orders</code> as the primary source.</li>
+    <li>Click <strong>Add to report</strong>.</li>
+  </ol>
+
+  <div class="code-block">
+    <div class="code-label">
+      <span class="code-filename">looker studio — connection details</span>
+      <button class="copy-btn" data-target="code-looker-conn">copy</button>
+    </div>
+    <pre id="code-looker-conn">Host      →  0.tcp.ngrok.io   (your ngrok hostname)
+Port      →  12345            (your ngrok port)
+Database  →  sales
+Username  →  pipeline
+Password  →  pipeline</pre>
+  </div>
+
+  <h3>Add dimension tables as blended sources</h3>
+  <ol class="looker-steps">
+    <li>In the report, go to <strong>Resource → Manage added data sources → Add a data source</strong>.</li>
+    <li>Add <code>dim_product</code>, <code>dim_region</code>, and <code>dim_time</code> using the same PostgreSQL connector.</li>
+    <li>Go to <strong>Resource → Manage blends</strong> and create a blend joining <code>fact_orders</code> with each dimension on the matching foreign key.</li>
+  </ol>
+
+  <h3>Build the three charts</h3>
+
+  <div class="explain">
+    <div class="explain-title">Chart 1 — Revenue by Product (Bar chart)</div>
+    <p><strong>Data source:</strong> fact_orders + dim_product blend.</p>
+    <p><strong>Dimension:</strong> <code>dim_product.product_name</code> — <strong>Metric:</strong> <code>SUM(fact_orders.total)</code></p>
+    <p><strong>Sort:</strong> metric descending. <strong>Color:</strong> by <code>price_tier</code>.</p>
+    <p>This chart answers: which product generates the most revenue overall?</p>
+  </div>
+
+  <div class="explain">
+    <div class="explain-title">Chart 2 — Orders by Region (Geo chart or Pie)</div>
+    <p><strong>Data source:</strong> fact_orders + dim_region blend.</p>
+    <p><strong>Dimension:</strong> <code>dim_region.region_name</code> — <strong>Metric:</strong> <code>COUNT(fact_orders.order_id)</code></p>
+    <p>Use a Pie chart for proportional view, or a Scorecard for each region side by side.</p>
+    <p>This chart answers: which region places the most orders?</p>
+  </div>
+
+  <div class="explain">
+    <div class="explain-title">Chart 3 — Order Volume by Hour (Line chart)</div>
+    <p><strong>Data source:</strong> fact_orders + dim_time blend.</p>
+    <p><strong>Dimension:</strong> <code>dim_time.hour</code> — <strong>Metric:</strong> <code>COUNT(fact_orders.order_id)</code></p>
+    <p><strong>Sort:</strong> hour ascending. This reveals peak purchase hours in the simulated stream.</p>
+    <p>This chart answers: at what time of day do orders concentrate?</p>
+  </div>
+
+  <div class="note">
+    <strong>Live refresh:</strong> In Report Settings, set the data freshness to the minimum (1 hour for free tier). While running the producer + transformer in class, manually click <strong>Refresh data</strong> to show the dashboard updating with new orders.
+  </div>
+</section>
+
+<!-- 06 DISCUSSION -->
+<section id="discussion">
+  <h2><span class="num">06</span> Discussion — ETL vs ELT in the wild</h2>
+  <p>Use the last 15 minutes to discuss these questions as a group. There are no wrong answers — the goal is to connect the pipeline we built to real-world decisions.</p>
+
+  <div class="concepts">
+    <div class="concept">
+      <div class="concept-term">Q1</div>
+      <div class="concept-def">In our pipeline, where exactly is the boundary between ETL and ELT? Could we move the transformation into SQL instead of Python? What would that look like?</div>
+    </div>
+    <div class="concept">
+      <div class="concept-term">Q2</div>
+      <div class="concept-def">We run the transformer as a batch job. What would change if we moved the transformation logic directly into the Kafka consumer (real-time ETL)?</div>
+    </div>
+    <div class="concept">
+      <div class="concept-term">Q3</div>
+      <div class="concept-def">Our pipeline is 1 producer, 1 consumer, 1 broker. What would need to change to handle 10,000 orders per second instead of 1 per second?</div>
+    </div>
+    <div class="concept">
+      <div class="concept-term">Q4</div>
+      <div class="concept-def">What are the risks of the transformer NOT being idempotent? Describe a scenario where a non-idempotent ETL job causes a business problem.</div>
+    </div>
+    <div class="concept">
+      <div class="concept-term">Q5</div>
+      <div class="concept-def">If you were building this pipeline for a real company, what monitoring would you add? How would you know if the consumer stopped working at 3am?</div>
+    </div>
+    <div class="concept">
+      <div class="concept-term">Q6</div>
+      <div class="concept-def">We used Looker Studio. When would you choose Power BI instead? What about a Python dashboard (Plotly Dash or Streamlit)? What are the trade-offs?</div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 FULL PIPELINE -->
+<section>
+  <h2><span class="num">07</span> The complete pipeline</h2>
+  <p>Here is the full picture of what was built across both sessions:</p>
+
+  <div class="arch"><span class="hl">[ producer.py ]</span>  —  generates 1 order/sec with Faker, publishes JSON to topic "orders"
+       │
+       ▼
+<span class="hl">[ Kafka Broker ]</span>  ←── coordinated by ──►  <span class="hl">[ ZooKeeper ]</span>
+  buffers messages durably · retains data even if consumer is down
+       │
+       ▼
+<span class="hl">[ consumer.py ]</span>  —  reads topic "orders", deserializes JSON, inserts into PostgreSQL
+       │
+       ▼
+<span class="hl">[ orders_raw ]</span>  ────── batch ──────►  <span class="hl">[ transformer.py ]</span>
+  raw, unprocessed                      cleans · enriches · categorizes
+                                               │
+                              ┌────────────────┼────────────────┐
+                              ▼                ▼                ▼
+                      <span class="hl">dim_product</span>      <span class="hl">dim_region</span>       <span class="hl">dim_time</span>
+                              └────────────────┼────────────────┘
+                                               ▼
+                                       <span class="hl">fact_orders</span>
+                                               │
+                                               ▼
+                                    <span class="hl">[ Looker Studio ]</span>
+                                  revenue · region · time</div>
+</section>
+
+<!-- 08 CHECKLIST -->
+<section id="checklist">
+  <h2><span class="num">08</span> End-of-class checklist</h2>
+  <p>Click each item to mark it done.</p>
+  <ul class="checklist" id="done-list">
+    <li><span class="box">□</span> You can explain the difference between ETL and ELT with a concrete example</li>
+    <li><span class="box">□</span> transformer.py runs without errors and loads rows into fact_orders</li>
+    <li><span class="box">□</span> Running transformer.py a second time loads 0 new rows (idempotent)</li>
+    <li><span class="box">□</span> All 4 star schema tables have data (verify with the row count query)</li>
+    <li><span class="box">□</span> The JOIN query between fact_orders and dim_product returns correct results</li>
+    <li><span class="box">□</span> Looker Studio is connected to PostgreSQL via ngrok</li>
+    <li><span class="box">□</span> At least 2 charts are built in Looker Studio from the star schema</li>
+    <li><span class="box">□</span> You can explain what idempotency means and why it matters for ETL</li>
+    <li><span class="box">□</span> You can describe the role of each table in the star schema (fact vs dimension)</li>
+  </ul>
+
+  <h3 style="margin-top:2rem;">What comes next</h3>
+  <p>You now have a complete streaming pipeline from data generation to live visualization. From here, natural next steps include scheduling the transformer with Apache Airflow, adding data quality checks with Great Expectations, moving to a managed Kafka service (Confluent Cloud, AWS MSK), or replacing the batch transformer with a stream processor like Apache Flink.</p>
+</section>
+
+<footer>
+  <span>Real-Time Sales Pipeline · Class 2 of 2</span>
+  <span>Python · Apache Kafka · PostgreSQL · Looker Studio</span>
+</footer>
+
+<script>
+  // Copy buttons
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pre = document.getElementById(btn.getAttribute('data-target'));
+      if (!pre) return;
+      const text = pre.innerText || pre.textContent;
+      const doSuccess = () => {
+        btn.textContent = 'copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+      };
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(doSuccess).catch(() => fallback(text, doSuccess));
+      } else { fallback(text, doSuccess); }
+    });
+  });
+
+  function fallback(text, cb) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    Object.assign(ta.style, { position:'fixed', top:'0', left:'0', opacity:'0' });
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); cb(); } catch(e) {}
+    document.body.removeChild(ta);
+  }
+
+  // Interactive checklist
+  document.querySelectorAll('.checklist li').forEach(li => {
+    li.addEventListener('click', () => {
+      li.classList.toggle('done');
+      li.querySelector('.box').textContent = li.classList.contains('done') ? '✓' : '□';
+    });
+  });
+</script>
+</body>
+</html>

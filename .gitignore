@@ -1,13 +1,6 @@
-# Data files
-*.csv
-*.json
-
-# Environments
-venv/
-.venv/
-env/
 __pycache__/
-
-# OS files
-.DS_Store
-Thumbs.db
+*.pyc
+.env
+.pytest_cache/
+.vscode/
+volumes/
